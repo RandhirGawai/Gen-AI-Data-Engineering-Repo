@@ -4,6 +4,9 @@ Fine-tuning is the process of tweaking a pre-trained large language model (LLM) 
 
 ## What is Fine-Tuning?
 
+![6CA6FBDE-CD49-49F4-A85E-E0B7E9375A6D_1_201_a](https://github.com/user-attachments/assets/7eb2832c-7be1-4df8-b932-16fd305cb390)
+
+
 Fine-tuning takes a pre-trained LLM, trained on huge datasets like internet text, and adapts it for specific needs. It comes in three types:
 - **Domain-Specific**: Customizing the model for a specific field, like medicine or law.
 - **Task-Specific**: Optimizing the model for a particular job, like predicting or generating text.
@@ -14,6 +17,9 @@ Traditional fine-tuning updates all model parameters, which demands lots of comp
 ## LoRA: Low-Rank Adaptation
 
 ### What is LoRA?
+
+![F66093E7-EDA5-4E3D-A37E-2755BEE86D8A_1_201_a](https://github.com/user-attachments/assets/9c5be443-a38b-4db0-9867-631e1b39b03d)
+
 
 LoRA makes fine-tuning efficient by updating only a tiny part of the model’s weights (parameters) using *low-rank matrices*. Instead of changing the entire weight matrix (a large grid of numbers), LoRA adds a small update using two smaller matrices, called B and A. These matrices are much smaller than the original, so they need less memory and computing power.
 

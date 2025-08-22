@@ -906,8 +906,7 @@ graph.add_conditional_edges(
 - **Pitfall**: Large histories increase tokens; suggest summarization.
 
 ## 14. astream
-**What it is**: Asynchronous streaming for non-blocking, real-time outputs.
-
+**What it is**: It means the system can send results piece by piece in real time, without waiting for the whole output to finish, and without blocking other tasks.
 **Example**:
 ```python
 async for event in agent.astream({"query": "What's the weather?"}):

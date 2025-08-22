@@ -9,6 +9,17 @@ Max tokens = how long they’re allowed to talk.
 
 Repetition penalty = telling them “don’t repeat yourself too much.”
 
+
+Inside your Docker container:
+
+📦 Ubuntu (lightweight OS)
+ ├── Python 3.10
+ ├── Flask app (chatbot.py)
+ ├── Model weights (optional, or API integration code)
+ ├── Libraries (transformers, langchain, faiss, etc.)
+ ├── Configs (API keys, database URI)
+ └── Gunicorn/Uvicorn (to serve the chatbot API)
+
 ## 1. How to Perform Indexing of Context (Technique Behind It)?
 
 Indexing of context usually refers to preparing documents for retrieval in RAG (Retrieval-Augmented Generation).

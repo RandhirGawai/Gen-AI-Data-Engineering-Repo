@@ -14,6 +14,14 @@ Fine-tuning takes a pre-trained LLM, trained on huge datasets like internet text
 
 Traditional fine-tuning updates all model parameters, which demands lots of computer power, memory, and time. It can also harm the model’s existing knowledge, a problem called *catastrophic forgetting*. LoRA and QLoRA fix these issues by updating only a small portion of the model, saving resources and preserving knowledge.
 
+![D1D36688-402A-4CEB-BB54-0595DEC9F344_1_201_a](https://github.com/user-attachments/assets/0992815a-7389-4525-a534-3a5727fa2842)
+![2236DCF1-D493-4017-B1E7-D7E676B6B052_1_201_a](https://github.com/user-attachments/assets/f99d1fd6-6af3-4505-a30e-78251d7a9c82)
+![B179E9C3-F699-4B7F-9AED-E626284CFFB2_1_201_a](https://github.com/user-attachments/assets/68dceb81-114a-4ad4-ac26-8490393953b3)
+
+![B49E847F-D726-450C-B9DA-D66373B0CBBD_1_201_a](https://github.com/user-attachments/assets/ad4f7596-e243-47bf-9f64-94c712aa848d)
+
+
+
 ## LoRA: Low-Rank Adaptation
 
 ### What is LoRA?
@@ -49,6 +57,7 @@ For example:
 ## QLoRA: Quantized Low-Rank Adaptation
 
 ### What is QLoRA?
+![BB74933B-2B3A-40A1-AFC0-D74F97FEBEA2_1_201_a](https://github.com/user-attachments/assets/bfd7af70-b0cd-45f4-8c95-4c939d1575d5)
 
 QLoRA builds on LoRA by adding *quantization*, which shrinks the model by converting its weights from high-precision numbers (e.g., 32-bit) to lower-precision ones (e.g., 4-bit). This saves even more memory. QLoRA first quantizes the model, then applies LoRA updates. It uses a scaling factor to reduce errors from quantization, ensuring the model stays accurate.
 
@@ -64,6 +73,9 @@ For example:
 - **Handles Errors**: Scaling factors and special optimizers reduce accuracy loss from quantization.
 
 ### How to Use QLoRA
+![AF1B9CCC-06D3-4912-B58C-FDE8A2DCF1E3_1_201_a](https://github.com/user-attachments/assets/6d2bea05-5f4c-421c-bfe5-7f42f37ec823)
+![480B993B-A16E-4FCF-932D-0024A266B46A_1_105_c](https://github.com/user-attachments/assets/b1dde5fb-1ff6-4734-8152-fdc0e67a851f)
+
 
 1. Quantize the pre-trained model to lower bits (e.g., 4-bit).
 2. Apply LoRA adapters to the quantized model.
@@ -80,6 +92,9 @@ For example:
 - **LoRA**: Simpler and faster but uses more memory.
 - **QLoRA**: More memory-efficient but slightly slower due to quantization.
 - Both use low-rank updates to save resources and are great for custom fine-tuning without retraining the entire model.
+
+
+
 
 ## Practical Tips
 

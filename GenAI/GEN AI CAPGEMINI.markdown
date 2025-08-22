@@ -1,5 +1,14 @@
 # AI and ECS FAQ
 
+
+Temperature = how “wild” or “serious” they are.
+
+Top-k / Top-p = how many words they keep in their vocabulary while choosing the next word.
+
+Max tokens = how long they’re allowed to talk.
+
+Repetition penalty = telling them “don’t repeat yourself too much.”
+
 ## 1. How to Perform Indexing of Context (Technique Behind It)?
 
 Indexing of context usually refers to preparing documents for retrieval in RAG (Retrieval-Augmented Generation).

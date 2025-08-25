@@ -1,192 +1,105 @@
-Comprehensive Data Engineering and Big Data Interview Questions with Answers
-============================================================================
+# Azure Data Factory (ADF)
 
-This document compiles a comprehensive set of interview questions and answers based on the technologies and tools discussed in the architecture provided, suitable for aspiring data engineers and professionals preparing for Big Data interviews. Tags are included where applicable to indicate companies or common sources of the questions.
+## Q1. What is Azure Data Factory, and why is it used in data engineering?
 
-* * * * *
+ADF is a cloud tool to move and transform data.  
+You can create workflows (pipelines) that:  
+- Ingest data (bring it in) from sources like SQL, APIs, files.  
+- Transform data (clean, process) using Databricks/other tools.  
+- Load data into storage like Azure Data Lake or Synapse.
 
-**Azure Data Factory (ADF)**
-----------------------------
+## Q2. How do you create and schedule a pipeline in ADF?
 
-### **Q1. What is Azure Data Factory, and why is it used in data engineering?**
+**Steps:**  
+- Open ADF in Azure portal.  
+- Create a new pipeline in the visual editor.  
+- Add activities (e.g., "Copy Data").  
+- Define source (input) and sink (output).  
+- Test and publish.  
+- Use triggers to schedule runs (daily, hourly, etc.).
 
-**Answer:** Azure Data Factory (ADF) is a cloud-based data integration service that allows you to create data-driven workflows for orchestrating and automating data movement and data transformation. It is used in data engineering to:
+## Q3. Mapping Data Flow vs Wrangling Data Flow
 
-1.  Ingest data from various sources (e.g., HTTP, SQL databases, APIs).
+- **Mapping Data Flow**: For structured, large-scale ETL (transform data at scale).  
+- **Wrangling Data Flow**: For exploration/cleaning using Power Query (ad-hoc tasks).
 
-2.  Transform data using tools like Databricks.
+# Azure Data Lake Storage (ADLS Gen2)
 
-3.  Load data into destinations such as Azure Data Lake or Synapse Analytics.
+## Q4. What is ADLS Gen2 and why is it important?
 
-### **Q2. How do you create and schedule a pipeline in ADF?**
+It’s Azure’s storage for big data.  
+**Features:**  
+- Fast hierarchical file system (like folders).  
+- Works well with Databricks & Synapse.  
+- Secure with access control & encryption.
 
-**Answer:** To create and schedule a pipeline in ADF:
+## Q5. How to secure ADLS Gen2?
 
-1.  Log in to the Azure portal and navigate to ADF.
+- Use RBAC (Role-Based Access Control).  
+- Set firewall & VNet rules.  
+- Encrypt data at rest & in transit.  
+- Monitor access with Azure Monitor/Sentinel.
 
-2.  Create a new pipeline using the visual editor.
+# Azure Databricks & Spark
 
-3.  Add activities like "Copy Data" or "Data Flow".
+## Q6. What is Azure Databricks and how does it connect to Spark?
 
-4.  Configure the source and sink datasets.
+Databricks = cloud workspace for Spark.  
+**Used for:**  
+- Big data processing (with Spark clusters).  
+- Machine learning.  
+- Easy integration with ADLS & Synapse.
 
-5.  Test the pipeline and publish it.
+## Q7. Benefits of Apache Spark
 
-6.  Use triggers to schedule the pipeline for execution.
+- **Fast**: In-memory processing.  
+- **Scalable**: Handles huge datasets.  
+- **Flexible**: Works with Python, Scala, R, Java.  
+- **Rich APIs**: MLlib, Spark SQL, Streaming.
 
-**Tag:** Commonly asked by Microsoft, Infosys, and TCS.
+# Azure Synapse Analytics
 
-### **Q3. Explain the difference between Mapping Data Flow and Wrangling Data Flow in ADF.**
+## Q8. Serverless SQL Pool vs Dedicated SQL Pool
 
-**Answer:**
+- **Serverless**: Pay only per query, directly query data in data lake.  
+- **Dedicated**: Pre-provisioned compute, best for heavy, high-performance queries.
 
--   **Mapping Data Flow:** A visual data transformation tool for scalable ETL processes. Best for structured data transformations.
+## Q9. Can Synapse be a lakehouse?
 
--   **Wrangling Data Flow:** Uses Power Query for data preparation and exploration. Best for ad hoc or exploratory data tasks.
+Yes:  
+- Store raw data in ADLS (data lake).  
+- Query directly with Serverless SQL.  
+- Combine structured + unstructured data → like a lake + warehouse in one.
 
-* * * * *
+# General Data Engineering
 
-**Azure Data Lake Storage (ADLS Gen2)**
----------------------------------------
+## Q10. What is Medallion Architecture?
 
-### **Q4. What is ADLS Gen2, and why is it significant in a data engineering architecture?**
+Data is organized in 3 layers:  
+- **Bronze**: Raw data.  
+- **Silver**: Cleaned data.  
+- **Gold**: Business-ready data.  
+Ensures quality + scalability.
 
-**Answer:** ADLS Gen2 is a scalable, high-performance cloud storage solution optimized for big data analytics. Key features include:
+## Q11. Data Lake vs Data Warehouse
 
-1.  Hierarchical file system for fast access.
+- **Data Lake**: Raw, any format, big data. Good for processing.  
+- **Data Warehouse**: Clean, structured, optimized for reporting.
 
-2.  Integration with analytics tools like Databricks and Synapse.
+# Scenario-Based
 
-3.  Secure data storage with access control and encryption.
+## Q12. ADF pipeline fails at 2 a.m., how to fix?
 
-### **Q5. How do you secure data in ADLS Gen2?**
+- Check ADF monitoring → see where it failed.  
+- Look at error logs.  
+- Verify source/target connections.  
+- Fix issue (credentials, mapping, etc.).  
+- Rerun pipeline and monitor.
 
-**Answer:**
+## Q13. How to optimize Spark jobs in Databricks?
 
-1.  Use role-based access control (RBAC) to restrict access.
-
-2.  Implement firewall and virtual network rules.
-
-3.  Encrypt data at rest and in transit.
-
-4.  Monitor access using Azure Monitor or Azure Sentinel.
-
-**Tag:** Asked in Accenture, Capgemini.
-
-* * * * *
-
-**Azure Databricks and Spark**
-------------------------------
-
-### **Q6. What is Azure Databricks, and how does it integrate with Spark?**
-
-**Answer:** Azure Databricks is a cloud-based analytics platform optimized for Apache Spark. It provides a collaborative workspace for:
-
-1.  Big data processing with Spark clusters.
-
-2.  Machine learning workflows.
-
-3.  Integration with ADLS and Synapse.
-
-**Tag:** Popular question in FAANG companies.
-
-### **Q7. What are the key benefits of using Apache Spark for big data processing?**
-
-**Answer:**
-
-1.  **Speed:** In-memory computation is much faster than disk-based processing.
-
-2.  **Scalability:** Can handle petabytes of data.
-
-3.  **Flexibility:** Supports multiple languages (Python, Scala, Java, R).
-
-4.  **Rich APIs:** Provides libraries for ML (MLlib), SQL (Spark SQL), and streaming.
-
-* * * * *
-
-**Azure Synapse Analytics**
----------------------------
-
-### **Q8. What is the difference between a Serverless SQL Pool and a Dedicated SQL Pool in Synapse?**
-
-**Answer:**
-
--   **Serverless SQL Pool:** Pay-as-you-go model for querying data directly in the data lake without loading it into a database.
-
--   **Dedicated SQL Pool:** A provisioned data warehouse for high-performance queries.
-
-### **Q9. Can Synapse be used as a data lakehouse? If yes, explain how.**
-
-**Answer:** Yes, Synapse can function as a data lakehouse by:
-
-1.  Storing data in ADLS Gen2 (data lake).
-
-2.  Querying data directly using Serverless SQL Pools.
-
-3.  Combining structured and unstructured data for analytics.
-
-**Tag:** Frequently asked by AWS, Google Cloud teams, and Snowflake interviewers.
-
-* * * * *
-
-**General Data Engineering Questions**
---------------------------------------
-
-### **Q10. What is the medallion architecture, and why is it important?**
-
-**Answer:** The medallion architecture organizes data into three layers:
-
-1.  **Bronze Layer:** Raw data ingestion.
-
-2.  **Silver Layer:** Cleaned and transformed data.
-
-3.  **Gold Layer:** Business-level aggregates for analytics.
-
-It ensures data quality, improves scalability, and simplifies data processing workflows.
-
-### **Q11. How would you explain the difference between a data lake and a data warehouse?**
-
-**Answer:**
-
--   **Data Lake:** Stores structured and unstructured data in its raw form. Suitable for big data processing.
-
--   **Data Warehouse:** Stores structured data optimized for analytics. Suitable for reporting and business intelligence.
-
-**Tag:** Common at IBM, Deloitte, and KPMG.
-
-* * * * *
-
-**Scenario-Based Questions**
-----------------------------
-
-### **Q12. If your pipeline in ADF fails at 2 a.m., how would you debug and resolve the issue?**
-
-**Answer:**
-
-1.  Use the ADF monitoring tools to identify the failed activity.
-
-2.  Check the error message and logs for details.
-
-3.  Verify the source and sink connectivity.
-
-4.  Test the pipeline manually to reproduce the issue.
-
-5.  Apply a fix, such as updating credentials or correcting mapping errors.
-
-6.  Rerun the pipeline and monitor for successful execution.
-
-### **Q13. How do you optimize the performance of Spark jobs in Azure Databricks?**
-
-**Answer:**
-
-1.  Use caching to store intermediate results.
-
-2.  Optimize data partitions.
-
-3.  Use columnar storage formats like Parquet.
-
-4.  Avoid wide transformations like groupByKey.
-
-5.  Tune cluster configurations (e.g., memory, cores).
-
-**Tag:** Popular at Databricks, Cloudera, and Hortonworks interviews.
+- Cache reused data.  
+- Optimize partitions.  
+- Use Parquet (columnar storage).  
+- Avoid heavy ops like groupByKey.  
+- Tune cluster settings (memory, cores).

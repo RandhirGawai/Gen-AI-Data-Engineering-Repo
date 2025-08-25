@@ -213,15 +213,15 @@ job.commit()
 
 A typical PySpark pipeline includes:
 
-1. **Ingestion Layer**: Read raw data from S3, databases, Kafka, etc.
-2. **Staging Layer**: Store raw data in temporary S3 or Delta tables.
+1. **Ingestion Layer**: Read raw data from S3/blob, databases, Kafka, etc.
+2. **Staging Layer**: Store raw data in temporary S3/blob or Delta tables.
 3. **Transformation Layer**:
    - Cleaning (null handling, type casting)
    - Filtering
    - Aggregations
    - Joins
    - Enrichments
-4. **Storage Layer**: Write to curated S3 paths in Parquet/Delta format.
+4. **Storage Layer**: Write to curated S3/blob paths in Parquet/Delta format.
 5. **Serving Layer**: BI tools (Power BI, QuickSight, Tableau) or ML pipelines consume curated data.
 
 ### Example Pipeline

@@ -831,14 +831,93 @@ async for chunk in app.stream(input_data):
 
 **Example**:
 ```python
-from langchain_openai import ChatOpenAI
-from langgraph.graph import StateGraph
+from typing import Dict, List, Callable
+from dataclasses import dataclass
 
-def ask_model(state: State):
-    llm = ChatOpenAI(model="gpt-4")
-    response = llm.invoke({"inputs": state["messages"]})
-    return {"messages": [AIMessage(content=response.content)]}
+# Mock LLM function (replace with actual LLM API call, e.g., LangChain or Hugging Face)
+def mock_llm(prompt: str) -> str:
+    return f"LLM response to: {prompt}"
+
+# Define a Node in the graph
+@dataclass
+class GraphNode:
+    id: str
+    task: Callable[[str], str]  # Function to execute (e.g., LLM call or processing)
+    prompt: str  # Input prompt for the task
+
+# Define the Graph structure
+class LLMGraph:
+    def __init__(self):
+        self.nodes: Dict[str, GraphNode] = {}
+        self.edges: Dict[str, List[str]] = {}  # Adjacency list for node connections
+
+    def add_node(self, node: GraphNode):
+        self.nodes[node.id] = node
+        self.edges[node.id] = []
+
+    def add_edge(self, from_node: str, to_node: str):
+        if from_node in self.nodes and to_node in self.nodes:
+            self.edges[from_node].append(to_node)
+
+    def execute(self, start_node: str) -> List[str]:
+        results = []
+        visited = set()
+
+        def dfs(node_id: str):
+            if node_id in visited:
+                return
+            visited.add(node_id)
+            node = self.nodes[node_id]
+            result = node.task(node.prompt)
+            results.append(f"Node {node_id}: {result}")
+            for next_node in self.edges[node_id]:
+                dfs(next_node)
+
+        dfs(start_node)
+        return results
+
+# Example usage
+def main():
+    # Initialize the graph
+    graph = LLMGraph()
+
+    # Create nodes with mock LLM tasks
+    node1 = GraphNode(id="1", task=mock_llm, prompt="Generate a greeting")
+    node2 = GraphNode(id="2", task=mock_llm, prompt="Summarize AI benefits")
+    node3 = GraphNode(id="3", task=mock_llm, prompt="Explain AI ethics")
+
+    # Add nodes to the graph
+    graph.add_node(node1)
+    graph.add_node(node2)
+    graph.add_node(node3)
+
+    # Define edges (workflow: node1 -> node2 -> node3)
+    graph.add_edge("1", "2")
+    graph.add_edge("2", "3")
+
+    # Execute the graph starting from node1
+    results = graph.execute("1")
+    for result in results:
+        print(result)
+
+if __name__ == "__main__":
+    main()
 ```
+
+## Explanation
+- **GraphNode**: A dataclass representing a node with an ID, a task (e.g., calling an LLM), and a prompt.
+- **LLMGraph**: Manages nodes and edges, with a depth-first search (DFS) to execute tasks in order.
+- **Mock LLM**: Simulates an LLM response (replace with actual LLM calls, e.g., via Hugging Face's `transformers` or LangChain).
+- **Workflow**: The graph executes tasks in the order defined by edges (e.g., node1 → node2 → node3).
+- **Output**: For each node, it prints the node ID and the mock LLM response.
+
+## Example Output
+```
+Node 1: LLM response to: Generate a greeting
+Node 2: LLM response to: Summarize AI benefits
+Node 3: LLM response to: Explain AI ethics
+```
+
 
 **Use Case**: Multi-step reasoning in pipelines.
 

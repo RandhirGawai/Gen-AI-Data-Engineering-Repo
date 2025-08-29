@@ -654,6 +654,54 @@ state: State = {
 }
 ```
 
+## 2. Pydantic Example
+Pydantic provides validation and serialization for structured data. Here's an equivalent model:
+
+```python
+from pydantic import BaseModel
+from typing import List
+
+class State(BaseModel):
+    query: str
+    messages: List[str]
+
+# Creating an instance with validation
+state = State(query="What is AI?", messages=["Hello", "How can I help?"])
+
+# Example of accessing data
+print(state.query)  # Output: What is AI?
+print(state.messages)  # Output: ['Hello', 'How can I help?']
+
+# Validation example (will raise an error if types are incorrect)
+# state = State(query=123, messages=["Hello"])  # Raises ValidationError
+```
+
+## 3. Dataclass Example
+Python's `dataclass` provides a lightweight way to create classes with automatic methods like `__init__`. Here's an equivalent model:
+
+```python
+from dataclasses import dataclass
+from typing import List
+
+@dataclass
+class State:
+    query: str
+    messages: List[str]
+
+# Creating an instance
+state = State(query="What is AI?", messages=["Hello", "How can I help?"])
+
+# Example of accessing data
+print(state.query)  # Output: What is AI?
+print(state.messages)  # Output: ['Hello', 'How can I help?']
+```
+
+## Key Differences
+- **TypedDict**: Type hints for dictionaries, no runtime validation, lightweight for simple type checking.
+- **Pydantic**: Runtime validation, serialization (e.g., to JSON), and error handling, ideal for APIs and data pipelines.
+- **Dataclass**: Automatic method generation (e.g., `__init__`, `__repr__`), no runtime validation, suitable for simple data structures.
+
+
 **How it works**:
 - Defines a dictionary schema with required keys (`query`, `messages`) and their types (`str`, `list[str]`).
 - Provides IDE autocompletion and type checking (e.g., mypy flags errors if `messages = 123`).

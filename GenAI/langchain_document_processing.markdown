@@ -396,6 +396,25 @@ prompt_text = parser.get_format_instructions()
 print(prompt_text)
 ```
 
+Common output parsers for LLMs (e.g., in LangChain):
+
+- **StructuredOutputParser**: Parses into structured formats like JSON.
+- **JsonOutputParser**: Extracts JSON objects.
+- **PydanticOutputParser**: Validates output with Pydantic models.
+- **RegexParser**: Uses regex for pattern extraction.
+- **ListOutputParser**: Parses into lists.
+- **DictOutputParser**: Converts to dictionaries.
+- **BooleanOutputParser**: Interprets as true/false.
+- **CSVOutputParser**: Parses into CSV format.
+- **EnumOutputParser**: Maps to enumerated values.
+- **XMLOutputParser**: Extracts XML data.
+- **RetryOutputParser**: Reparses failed outputs.
+- **OutputFixingParser**: Fixes malformed outputs.
+- **DatetimeOutputParser**: Parses dates/times.
+- **CustomOutputParser**: User-defined parsing.
+
+
+
 **Summary Table**:
 
 | Term                  | Purpose                                              |

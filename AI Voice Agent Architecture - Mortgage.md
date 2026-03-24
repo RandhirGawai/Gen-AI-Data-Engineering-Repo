@@ -266,5 +266,62 @@ get_db_connection() creates fresh psycopg2 connection per operation (autocommit=
 **Q12: Why use psycopg2 (sync) instead of asyncpg?**  
 Thread safety in run_in_executor(). psycopg2 works cleanly in thread pool; asyncpg is not thread-safe.
 
-Current branch: bugfix/tpprpp-and-service-ytransfer-greeting-msg-reattempt (fixing filler phrases, IVR detection, call screener).
+# Difference Between psycopg2 and asyncpg
 
+## 1. Quick Comparison Table
+
+| Feature                  | **psycopg2**                                      | **asyncpg**                                          |
+|--------------------------|---------------------------------------------------|-----------------------------------------------------|
+| **Type**                | Synchronous (Sync)                               | Asynchronous (Async)                               |
+| **Working Style**       | Blocks your code while waiting for database      | Non-blocking – your code continues running         |
+| **Performance**         | Good for normal use                              | Much faster (2x–5x) for high concurrency           |
+| **Best For**            | Simple scripts, Django, Flask, small projects    | FastAPI, real-time apps, high-traffic applications |
+| **Ease of Use**         | Very easy, standard Python DB-API                | Requires `async`/`await` syntax                    |
+| **Maturity**            | Very old, stable & widely supported              | Newer but modern and highly performant             |
+
+---
+
+## 2. Simple Explanation
+
+### psycopg2
+- Traditional PostgreSQL driver for Python.
+- When you run a query, Python **waits** until the database responds.
+- Easy to learn and use.
+- Suitable for most beginner and medium-level projects.
+
+### asyncpg
+- Modern, high-performance PostgreSQL driver.
+- Designed for asynchronous programming.
+- Does **not** block your code while waiting for the database.
+- Best choice when building fast, scalable applications with FastAPI or other async frameworks.
+
+---
+
+## 3. Async vs Sync – Explained Simply
+
+Imagine you're ordering food in a restaurant:
+
+- **Synchronous (Sync)**:  
+  You give your order and **stand at the counter** waiting until your food is ready. You can't do anything else.
+
+- **Asynchronous (Async)**:  
+  You give your order, the waiter says "I'll bring it when ready", and you go back to your table and continue chatting or eating snacks. When food is ready, it comes to you.
+
+### Comparison Table
+
+| Aspect               | **Sync (Synchronous)**                     | **Async (Asynchronous)**                          |
+|----------------------|--------------------------------------------|---------------------------------------------------|
+| Execution            | One task at a time, waits for completion   | Multiple tasks run without waiting                |
+| Blocking             | Blocks the program                         | Non-blocking                                      |
+| Speed & Scalability  | Slower with many users or slow operations  | Excellent for high traffic and I/O operations     |
+| Code Complexity      | Easier to write                            | Slightly more complex (uses `async`/`await`)      |
+| Best Use Case        | Simple scripts, traditional web apps       | High-performance APIs, chat apps, real-time apps  |
+
+---
+
+## Recommendation
+
+- **Use psycopg2** if you are using Django, Flask, or building a simple project.
+- **Use asyncpg** if you are using **FastAPI** or building a high-performance asynchronous application.
+
+Would you like code examples for both in the same file? Let me know!

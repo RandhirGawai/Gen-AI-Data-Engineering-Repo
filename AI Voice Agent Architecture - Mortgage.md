@@ -28,7 +28,7 @@ PostgreSQL DB + Servicing Branch API + Twilio API
 
 ## How a Call Works (Step by Step)
 1. Call Initiated — System dials customer via Twilio with AMD (Answering Machine Detection)  
-2. Twilio Webhook — Server returns TwiML that opens a WebSocket audio stream  
+2. Twilio Webhook — Server returns TwiML(Twilio Markup Language:Think of TwiML as the "instructions" or "script" for handling voice calls, SMS, MMS, or WhatsApp messages in Twilio applications) that opens a WebSocket audio stream  
 3. WebSocket Connected — Server fetches customer data from Servicing Branch API  
 4. Agent Initialized — Azure VoiceLive agent loaded with customer context (name, loan, balance), state-driven prompt (GREETING → VERIFY → OCCUPANCY → PAYMENT → WRAPUP), available functions  
 5. Audio Streaming — Twilio sends μ-law 8kHz audio → converted to PCM16 24kHz → Azure processes it → response audio sent back  

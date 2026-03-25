@@ -260,8 +260,10 @@ print(len(vector))
 | Provider        | Example Model                  | Dim  | Offline? | Cost | Quality |
 |-----------------|-------------------------------|------|----------|------|---------|
 | OpenAI          | text-embedding-3-large        | 3072 | ❌       | Paid | ⭐⭐⭐⭐⭐ |
+| OpenAI          | text-embedding-ada-002        | 1536 | ❌       | Paid | ⭐⭐⭐⭐⭐ |
 | Hugging Face    | all-MiniLM-L6-v2             | 384  | ✅       | Free | ⭐⭐⭐⭐  |
 | LLaMA-based     | BGE-large                    | 1024 | ✅       | Free | ⭐⭐⭐⭐  |
+
 
 ## 4. Vector Databases and Retrieval
 

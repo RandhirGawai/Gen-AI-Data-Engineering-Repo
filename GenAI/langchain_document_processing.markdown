@@ -1,3 +1,8 @@
+
+![Prompt engineering](https://github.com/user-attachments/assets/ae034653-f542-48be-bb9e-9dabf3eacf89)
+
+
+
 # Comprehensive LangChain Document Processing and RAG Pipeline Guide
 
 This guide provides a complete overview of LangChain components for document loading, text splitting, embedding generation, vector storage, retrieval, and advanced techniques like LCEL, LangServe, LangGraph, and agentic RAG workflows. It includes all provided examples, explanations, and concepts for building a unified ingestion pipeline.

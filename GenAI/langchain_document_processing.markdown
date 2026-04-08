@@ -475,6 +475,245 @@ print(response)
 - **Map-Reduce**: Summarize each document, then summarize summaries.
 - **Refine**: Generate an answer from the first document, iteratively refine with others.
 
+
+
+# 📚 Map-Reduce Summarization using LangChain
+
+This guide explains how to summarize a large document using the **Map-Reduce approach** in a very simple way.
+
+---
+
+## 🧠 What is Map-Reduce?
+
+Think like this:
+
+* **Map Step** → Break big document into small chunks and summarize each chunk
+* **Reduce Step** → Combine all small summaries into one final summary
+
+👉 Just like:
+
+* You read 10 pages → summarize each page
+* Then combine all summaries → final summary
+
+---
+
+## ⚙️ Installation
+
+```bash
+pip install langchain openai tiktoken
+```
+
+---
+
+## 🧾 Full Program
+
+```python
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.llms import OpenAI
+from langchain.chains.summarize import load_summarize_chain
+
+# Step 1: Load your large document (example text here)
+text = """
+LangChain is a framework for developing applications powered by language models.
+It helps in chaining different components together like prompts, models, and memory.
+Map reduce is a technique used for handling large scale data.
+""" * 50   # repeating to simulate large text
+
+# Step 2: Split the text into smaller chunks
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=500,   # max size of each chunk
+    chunk_overlap=50  # overlap to maintain context
+)
+
+docs = text_splitter.create_documents([text])
+
+# Step 3: Initialize the LLM
+llm = OpenAI(temperature=0)
+
+# Step 4: Load Map-Reduce summarization chain
+chain = load_summarize_chain(
+    llm,
+    chain_type="map_reduce"  # this enables map-reduce
+)
+
+# Step 5: Run the summarization
+summary = chain.run(docs)
+
+# Step 6: Print final summary
+print(summary)
+```
+
+---
+
+## 🔍 Line-by-Line Explanation
+
+### 🔹 Import Libraries
+
+```python
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+```
+
+* This splits large text into smaller chunks intelligently
+
+```python
+from langchain.llms import OpenAI
+```
+
+* This loads the language model (LLM)
+
+```python
+from langchain.chains.summarize import load_summarize_chain
+```
+
+* This provides built-in summarization chains
+
+---
+
+### 🔹 Step 1: Load Text
+
+```python
+text = """ ... """ * 50
+```
+
+* Large text input (repeated to simulate big document)
+
+---
+
+### 🔹 Step 2: Split Text
+
+```python
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=500,
+    chunk_overlap=50
+)
+```
+
+* `chunk_size=500` → each chunk has 500 characters
+* `chunk_overlap=50` → 50 characters overlap to avoid losing context
+
+```python
+docs = text_splitter.create_documents([text])
+```
+
+* Converts text into document chunks
+
+---
+
+### 🔹 Step 3: Initialize Model
+
+```python
+llm = OpenAI(temperature=0)
+```
+
+* `temperature=0` → gives consistent and factual output
+
+---
+
+### 🔹 Step 4: Load Chain
+
+```python
+chain = load_summarize_chain(
+    llm,
+    chain_type="map_reduce"
+)
+```
+
+* `map_reduce` does:
+
+  * Map → summarize each chunk
+  * Reduce → combine summaries
+
+---
+
+### 🔹 Step 5: Run Chain
+
+```python
+summary = chain.run(docs)
+```
+
+* Executes full pipeline:
+
+  1. Summarizes each chunk
+  2. Combines all summaries
+
+---
+
+### 🔹 Step 6: Output
+
+```python
+print(summary)
+```
+
+* Prints final summarized result
+
+---
+
+## 🔄 How Map-Reduce Works Internally
+
+### 🟢 Map Step
+
+Each chunk → summarized individually
+
+```
+Chunk 1 → Summary 1
+Chunk 2 → Summary 2
+Chunk 3 → Summary 3
+```
+
+---
+
+### 🔵 Reduce Step
+
+All summaries → combined → final summary
+
+```
+[Summary 1 + Summary 2 + Summary 3] → Final Summary
+```
+
+---
+
+## ✅ Advantages
+
+* Handles very large documents
+* Parallel processing possible
+* Better memory efficiency
+
+---
+
+## ⚠️ Limitations
+
+* Might lose global context
+* Slightly slower due to multiple steps
+
+---
+
+## 🚀 Bonus Tip
+
+You can also customize prompts:
+
+```python
+from langchain.prompts import PromptTemplate
+```
+
+* Use custom instructions like:
+
+  * "Summarize in bullet points"
+  * "Explain like a beginner"
+
+---
+
+## 🎯 Summary
+
+| Step   | Action            |
+| ------ | ----------------- |
+| Map    | Summarize chunks  |
+| Reduce | Combine summaries |
+
+---
+
+🎉 Now you can summarize **huge documents efficiently using Map-Reduce!**
+
+
 ## 7. LangChain Expression Language (LCEL)
 
 LCEL (LangChain Expression Language) is like a shortcut language inside LangChain.

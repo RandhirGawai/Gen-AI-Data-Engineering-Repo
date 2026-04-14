@@ -1,4 +1,100 @@
 # FastAPI Complete Learning Guide - Build a Task Management API
+# FastAPI Interview Practice Questions & Solutions
+
+## Question 1: Basic GET endpoint
+```python
+from fastapi import FastAPI
+app = FastAPI()
+@app.get("/")
+async def read_root():
+    return {"message": "Hello World"}
+Question 2: POST with Pydantic model
+from fastapi import FastAPI
+from pydantic import BaseModel
+class Item(BaseModel):
+    name: str
+    price: float
+app = FastAPI()
+@app.post("/items/")
+async def create_item(item: Item):
+    return {"item": item}
+Question 3: Path and query params
+from fastapi import FastAPI
+app = FastAPI()
+@app.get("/items/{item_id}")
+async def read_item(item_id: int, q: str | None = None):
+    return {"item_id": item_id, "q": q}
+Question 4: Dependency injection
+from fastapi import FastAPI, Depends
+app = FastAPI()
+async def common_params(q: str | None = None):
+    return {"q": q}
+@app.get("/items/")
+async def read_items(commons: dict = Depends(common_params)):
+    return commons
+Question 5: HTTPException handling
+from fastapi import FastAPI, HTTPException
+app = FastAPI()
+@app.get("/items/{item_id}")
+async def read_item(item_id: int):
+    if item_id != 1:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return {"item_id": item_id}
+Question 6: File upload
+from fastapi import FastAPI, UploadFile, File
+app = FastAPI()
+@app.post("/upload/")
+async def upload_file(file: UploadFile = File(...)):
+    contents = await file.read()
+    return {"filename": file.filename, "size": len(contents)}
+Question 7: Background tasks
+from fastapi import FastAPI, BackgroundTasks
+app = FastAPI()
+def write_log(message: str):
+    with open("log.txt", "a") as f:
+        f.write(message + "\n")
+@app.post("/tasks/")
+async def run_task(background_tasks: BackgroundTasks):
+    background_tasks.add_task(write_log, "Task completed")
+    return {"message": "Task started"}
+Question 8: WebSocket
+from fastapi import FastAPI, WebSocket
+app = FastAPI()
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    while True:
+        data = await websocket.receive_text()
+        await websocket.send_text(f"Echo: {data}")
+Question 9: Custom middleware
+from fastapi import FastAPI
+import time
+app = FastAPI()
+@app.middleware("http")
+async def add_process_time_header(request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    response.headers["X-Process-Time"] = str(process_time)
+    return response
+Question 10: OAuth2 JWT auth
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.security import OAuth2PasswordBearer
+app = FastAPI()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    if token != "fake-jwt":
+        raise HTTPException(401, "Invalid token")
+    return {"user": "test"}
+@app.get("/users/me")
+async def read_users_me(current_user: dict = Depends(get_current_user)):
+    return current_user
+
+
+
+
+
+
 
 ## 📌 Project Overview
 

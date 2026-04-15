@@ -1,96 +1,1536 @@
 # FastAPI Complete Learning Guide - Build a Task Management API
 # FastAPI Interview Practice Questions & Solutions
 
-## Question 1: Basic GET endpoint
+## 
+
+# FastAPI Practice Questions & Solutions
+
+## Overview
+
+This guide contains **10 progressive FastAPI practice problems** with complete solutions and detailed line-by-line explanations. We’ll use in-memory data structures (lists and dicts) for storage.
+
+**Prerequisites:** Python 3.7+, FastAPI, Uvicorn
+
+```bash
+pip install fastapi uvicorn
+```
+
+-----
+
+## **Problem 1: Basic GET Request - Get All Users**
+
+### Question
+
+Create a FastAPI endpoint that:
+
+- Returns a list of all users
+- Each user has: `id`, `name`, `email`
+- Use a list to store users
+- GET endpoint at `/users`
+
+### Solution
+
 ```python
 from fastapi import FastAPI
-app = FastAPI()
-@app.get("/")
-async def read_root():
-    return {"message": "Hello World"}
-Question 2: POST with Pydantic model
-from fastapi import FastAPI
+from typing import List
 from pydantic import BaseModel
-class Item(BaseModel):
+
+app = FastAPI()
+
+# 1. Define the User model using Pydantic
+class User(BaseModel):
+    id: int
+    name: str
+    email: str
+
+# 2. Store users in memory (list of dictionaries)
+users_db = [
+    {"id": 1, "name": "Alice", "email": "alice@example.com"},
+    {"id": 2, "name": "Bob", "email": "bob@example.com"},
+    {"id": 3, "name": "Charlie", "email": "charlie@example.com"}
+]
+
+# 3. GET endpoint to fetch all users
+@app.get("/users", response_model=List[User])
+def get_all_users():
+    return users_db
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+```
+
+### Line-by-Line Explanation
+
+```python
+from fastapi import FastAPI
+```
+
+- Imports the main FastAPI class to create the application instance.
+
+```python
+from typing import List
+```
+
+- Imports `List` type hint for type annotations (tells Python and IDE we’re returning a list).
+
+```python
+from pydantic import BaseModel
+```
+
+- Imports `BaseModel` from Pydantic for data validation and serialization.
+
+```python
+app = FastAPI()
+```
+
+- Creates a FastAPI application instance. This is the core of our API.
+
+```python
+class User(BaseModel):
+    id: int
+    name: str
+    email: str
+```
+
+- Defines a **Pydantic model** for request/response validation.
+- `BaseModel` automatically validates incoming data against these types.
+- If data doesn’t match types, FastAPI returns a validation error automatically.
+
+```python
+users_db = [
+    {"id": 1, "name": "Alice", "email": "alice@example.com"},
+    ...
+]
+```
+
+- Creates an in-memory database as a Python list containing dictionary objects.
+
+```python
+@app.get("/users", response_model=List[User])
+```
+
+- `@app.get()` → Decorator that creates a GET HTTP endpoint.
+- `"/users"` → The URL path for this endpoint.
+- `response_model=List[User]` → Tells FastAPI to validate/serialize response as a list of User objects.
+
+```python
+def get_all_users():
+    return users_db
+```
+
+- Function that handles the endpoint logic.
+- Returns the users list directly.
+
+### Test It
+
+```bash
+# Start server
+python app.py
+
+# In another terminal, test the endpoint
+curl http://localhost:8000/users
+
+# Or visit in browser
+http://localhost:8000/users
+```
+
+-----
+
+## **Problem 2: GET Request with Path Parameter - Get User by ID**
+
+### Question
+
+Create an endpoint that:
+
+- Gets a single user by their `id`
+- Returns 404 if user not found
+- GET endpoint at `/users/{user_id}`
+
+### Solution
+
+```python
+from fastapi import FastAPI, HTTPException
+from typing import List
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class User(BaseModel):
+    id: int
+    name: str
+    email: str
+
+users_db = [
+    {"id": 1, "name": "Alice", "email": "alice@example.com"},
+    {"id": 2, "name": "Bob", "email": "bob@example.com"},
+    {"id": 3, "name": "Charlie", "email": "charlie@example.com"}
+]
+
+# 1. GET endpoint with path parameter
+@app.get("/users/{user_id}", response_model=User)
+def get_user(user_id: int):
+    # 2. Loop through users_db to find matching user
+    for user in users_db:
+        if user["id"] == user_id:
+            return user
+    
+    # 3. If user not found, raise HTTP 404 exception
+    raise HTTPException(status_code=404, detail="User not found")
+```
+
+### Line-by-Line Explanation
+
+```python
+@app.get("/users/{user_id}", response_model=User)
+```
+
+- `{user_id}` → Path parameter that will be extracted from the URL.
+- FastAPI automatically extracts this from the URL and passes it to the function.
+
+```python
+def get_user(user_id: int):
+```
+
+- Function receives `user_id` as a parameter.
+- Type hint `int` tells FastAPI to:
+  - Convert the string from URL to integer
+  - Return 422 validation error if conversion fails
+
+```python
+for user in users_db:
+    if user["id"] == user_id:
+        return user
+```
+
+- Iterates through the users list.
+- Checks if user’s id matches the requested user_id.
+- Returns the matching user.
+
+```python
+raise HTTPException(status_code=404, detail="User not found")
+```
+
+- If loop completes without finding user, raises HTTP 404 exception.
+- `detail` parameter provides error message in response body.
+
+### Test It
+
+```bash
+curl http://localhost:8000/users/1
+# Returns: {"id": 1, "name": "Alice", "email": "alice@example.com"}
+
+curl http://localhost:8000/users/999
+# Returns: {"detail": "User not found"} with 404 status
+```
+
+-----
+
+## **Problem 3: POST Request - Create a New User**
+
+### Question
+
+Create an endpoint that:
+
+- Accepts user data (name, email)
+- Generates a new ID automatically
+- Adds user to the database
+- Returns the created user
+- POST endpoint at `/users`
+
+### Solution
+
+```python
+from fastapi import FastAPI, HTTPException
+from typing import List
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class User(BaseModel):
+    id: int
+    name: str
+    email: str
+
+class UserCreate(BaseModel):  # 1. Request model without ID
+    name: str
+    email: str
+
+users_db = [
+    {"id": 1, "name": "Alice", "email": "alice@example.com"},
+    {"id": 2, "name": "Bob", "email": "bob@example.com"},
+    {"id": 3, "name": "Charlie", "email": "charlie@example.com"}
+]
+
+# 2. Helper function to get next available ID
+def get_next_user_id():
+    if not users_db:
+        return 1
+    return max(user["id"] for user in users_db) + 1
+
+# 3. POST endpoint to create user
+@app.post("/users", response_model=User, status_code=201)
+def create_user(user: UserCreate):
+    # 4. Generate new ID
+    new_id = get_next_user_id()
+    
+    # 5. Create new user dictionary
+    new_user = {
+        "id": new_id,
+        "name": user.name,
+        "email": user.email
+    }
+    
+    # 6. Add to database
+    users_db.append(new_user)
+    
+    # 7. Return the created user
+    return new_user
+```
+
+### Line-by-Line Explanation
+
+```python
+class UserCreate(BaseModel):
+    name: str
+    email: str
+```
+
+- Separate model for **request body** (without ID, since server generates it).
+- This is different from `User` response model which includes ID.
+
+```python
+def get_next_user_id():
+    if not users_db:
+        return 1
+    return max(user["id"] for user in users_db) + 1
+```
+
+- Helper function to auto-generate the next ID.
+- `if not users_db:` → Checks if list is empty, return 1 if it is.
+- `max(user["id"] for user in users_db) + 1` → Finds the maximum ID and adds 1.
+
+```python
+@app.post("/users", response_model=User, status_code=201)
+```
+
+- `@app.post()` → Creates a POST endpoint (for creating resources).
+- `status_code=201` → Returns HTTP 201 (Created) status instead of default 200.
+
+```python
+def create_user(user: UserCreate):
+```
+
+- `user` parameter is automatically validated against `UserCreate` model.
+- FastAPI validates that JSON body contains `name` and `email` fields.
+
+```python
+new_user = {
+    "id": new_id,
+    "name": user.name,
+    "email": user.email
+}
+```
+
+- Creates a dictionary from the Pydantic model data.
+- `user.name` accesses the name field from the UserCreate object.
+
+```python
+users_db.append(new_user)
+```
+
+- Adds the new user dictionary to the list.
+
+### Test It
+
+```bash
+curl -X POST http://localhost:8000/users \
+  -H "Content-Type: application/json" \
+  -d '{"name": "David", "email": "david@example.com"}'
+
+# Returns: {"id": 4, "name": "David", "email": "david@example.com"} with status 201
+```
+
+-----
+
+## **Problem 4: PUT Request - Update User**
+
+### Question
+
+Create an endpoint that:
+
+- Updates an existing user by ID
+- Accepts updated name and email
+- Returns 404 if user not found
+- PUT endpoint at `/users/{user_id}`
+
+### Solution
+
+```python
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class User(BaseModel):
+    id: int
+    name: str
+    email: str
+
+class UserUpdate(BaseModel):  # 1. Model for update (no ID)
+    name: str
+    email: str
+
+users_db = [
+    {"id": 1, "name": "Alice", "email": "alice@example.com"},
+    {"id": 2, "name": "Bob", "email": "bob@example.com"},
+    {"id": 3, "name": "Charlie", "email": "charlie@example.com"}
+]
+
+# 2. PUT endpoint to update user
+@app.put("/users/{user_id}", response_model=User)
+def update_user(user_id: int, user_update: UserUpdate):
+    # 3. Find the user in database
+    for i, user in enumerate(users_db):
+        if user["id"] == user_id:
+            # 4. Update the user data
+            users_db[i]["name"] = user_update.name
+            users_db[i]["email"] = user_update.email
+            # 5. Return updated user
+            return users_db[i]
+    
+    # 6. If not found, raise 404
+    raise HTTPException(status_code=404, detail="User not found")
+```
+
+### Line-by-Line Explanation
+
+```python
+class UserUpdate(BaseModel):
+    name: str
+    email: str
+```
+
+- Separate model for update requests (client provides both name and email).
+- Doesn’t include ID since that’s immutable.
+
+```python
+for i, user in enumerate(users_db):
+```
+
+- `enumerate()` gives both the **index** (`i`) and the **value** (`user`).
+- We need the index to update the user at that position in the list.
+
+```python
+if user["id"] == user_id:
+```
+
+- Checks if current user’s ID matches the requested user_id.
+
+```python
+users_db[i]["name"] = user_update.name
+users_db[i]["email"] = user_update.email
+```
+
+- Updates the values at the found index.
+- `user_update.name` accesses the name from the request model.
+
+```python
+return users_db[i]
+```
+
+- Returns the updated user from the list.
+
+### Test It
+
+```bash
+curl -X PUT http://localhost:8000/users/1 \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Alice Smith", "email": "alice.smith@example.com"}'
+
+# Returns: {"id": 1, "name": "Alice Smith", "email": "alice.smith@example.com"}
+```
+
+-----
+
+## **Problem 5: DELETE Request - Delete User**
+
+### Question
+
+Create an endpoint that:
+
+- Deletes a user by ID
+- Returns 404 if user not found
+- Returns a confirmation message
+- DELETE endpoint at `/users/{user_id}`
+
+### Solution
+
+```python
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class User(BaseModel):
+    id: int
+    name: str
+    email: str
+
+users_db = [
+    {"id": 1, "name": "Alice", "email": "alice@example.com"},
+    {"id": 2, "name": "Bob", "email": "bob@example.com"},
+    {"id": 3, "name": "Charlie", "email": "charlie@example.com"}
+]
+
+# 1. DELETE endpoint
+@app.delete("/users/{user_id}")
+def delete_user(user_id: int):
+    # 2. Iterate with enumerate to get index
+    for i, user in enumerate(users_db):
+        if user["id"] == user_id:
+            # 3. Remove user at index i
+            deleted_user = users_db.pop(i)
+            # 4. Return confirmation with deleted user data
+            return {
+                "message": f"User {user_id} deleted successfully",
+                "deleted_user": deleted_user
+            }
+    
+    # 5. If not found, raise 404
+    raise HTTPException(status_code=404, detail="User not found")
+```
+
+### Line-by-Line Explanation
+
+```python
+@app.delete("/users/{user_id}")
+```
+
+- `@app.delete()` → Creates a DELETE HTTP endpoint.
+- Used to delete resources.
+
+```python
+deleted_user = users_db.pop(i)
+```
+
+- `pop(i)` → Removes the element at index `i` and returns it.
+- Unlike `del users_db[i]`, pop returns the removed item.
+
+```python
+return {
+    "message": f"User {user_id} deleted successfully",
+    "deleted_user": deleted_user
+}
+```
+
+- Returns a dictionary with confirmation message.
+- Uses f-string to include the user_id in the message.
+
+### Test It
+
+```bash
+curl -X DELETE http://localhost:8000/users/1
+
+# Returns: 
+# {
+#   "message": "User 1 deleted successfully",
+#   "deleted_user": {"id": 1, "name": "Alice", "email": "alice@example.com"}
+# }
+```
+
+-----
+
+## **Problem 6: Query Parameters - Filter and Pagination**
+
+### Question
+
+Create an endpoint that:
+
+- Fetches users with optional filtering by name
+- Supports pagination (skip and limit)
+- GET endpoint at `/users`
+
+### Solution
+
+```python
+from fastapi import FastAPI
+from typing import List, Optional
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class User(BaseModel):
+    id: int
+    name: str
+    email: str
+
+users_db = [
+    {"id": 1, "name": "Alice Johnson", "email": "alice@example.com"},
+    {"id": 2, "name": "Bob Smith", "email": "bob@example.com"},
+    {"id": 3, "name": "Charlie Brown", "email": "charlie@example.com"},
+    {"id": 4, "name": "Diana Prince", "email": "diana@example.com"},
+    {"id": 5, "name": "Eve Wilson", "email": "eve@example.com"}
+]
+
+# 1. GET endpoint with query parameters
+@app.get("/users", response_model=List[User])
+def get_users(
+    # 2. Optional query parameters
+    name: Optional[str] = None,  # Filter by name (contains)
+    skip: int = 0,                # Number of records to skip
+    limit: int = 10               # Maximum records to return
+):
+    # 3. Start with all users
+    result = users_db
+    
+    # 4. Filter by name if provided
+    if name:
+        result = [user for user in result if name.lower() in user["name"].lower()]
+    
+    # 5. Apply pagination
+    result = result[skip : skip + limit]
+    
+    # 6. Return filtered and paginated results
+    return result
+```
+
+### Line-by-Line Explanation
+
+```python
+def get_users(
+    name: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 10
+):
+```
+
+- `Optional[str]` → Parameter is either a string or None.
+- `= None` → Default value is None (parameter is optional in URL).
+- `skip: int = 0` → How many records to skip, defaults to 0.
+- `limit: int = 10` → How many records to return, defaults to 10.
+
+```python
+if name:
+    result = [user for user in result if name.lower() in user["name"].lower()]
+```
+
+- **List comprehension** that filters users.
+- `name.lower()` → Converts to lowercase for case-insensitive search.
+- `in user["name"].lower()` → Checks if name contains the search string (substring match).
+
+```python
+result = result[skip : skip + limit]
+```
+
+- Python list slicing for pagination.
+- `skip` → Starting index
+- `skip + limit` → Ending index (not inclusive)
+- Example: If skip=2 and limit=3, returns items at index 2, 3, 4.
+
+### Test It
+
+```bash
+# Get all users with default pagination
+curl "http://localhost:8000/users"
+
+# Get users with name containing "john"
+curl "http://localhost:8000/users?name=john"
+
+# Get 2 users, skip first 2
+curl "http://localhost:8000/users?skip=2&limit=2"
+
+# Combine filters and pagination
+curl "http://localhost:8000/users?name=alice&skip=0&limit=5"
+```
+
+-----
+
+## **Problem 7: Request Body Validation - Multiple Fields**
+
+### Question
+
+Create an endpoint that:
+
+- Creates a product with validation
+- Name must be at least 3 characters
+- Price must be greater than 0
+- Stock must be >= 0
+- POST endpoint at `/products`
+
+### Solution
+
+```python
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
+from typing import List
+
+app = FastAPI()
+
+# 1. Define Product model with validation
+class Product(BaseModel):
+    id: int
+    name: str = Field(..., min_length=3, max_length=100)  # name is required, min 3 chars
+    price: float = Field(..., gt=0)                        # price must be > 0
+    stock: int = Field(..., ge=0)                          # stock must be >= 0
+    description: str = Field(None, max_length=500)         # optional, max 500 chars
+
+class ProductCreate(BaseModel):
+    name: str = Field(..., min_length=3, max_length=100)
+    price: float = Field(..., gt=0)
+    stock: int = Field(..., ge=0)
+    description: str = Field(None, max_length=500)
+
+products_db = [
+    {"id": 1, "name": "Laptop", "price": 999.99, "stock": 5, "description": "Gaming laptop"},
+    {"id": 2, "name": "Mouse", "price": 29.99, "stock": 50, "description": "Wireless mouse"}
+]
+
+def get_next_product_id():
+    if not products_db:
+        return 1
+    return max(p["id"] for p in products_db) + 1
+
+# 2. POST endpoint
+@app.post("/products", response_model=Product, status_code=201)
+def create_product(product: ProductCreate):
+    # 3. Create new product with generated ID
+    new_product = {
+        "id": get_next_product_id(),
+        "name": product.name,
+        "price": product.price,
+        "stock": product.stock,
+        "description": product.description
+    }
+    
+    # 4. Add to database
+    products_db.append(new_product)
+    
+    # 5. Return created product
+    return new_product
+```
+
+### Line-by-Line Explanation
+
+```python
+name: str = Field(..., min_length=3, max_length=100)
+```
+
+- `Field()` → Function to add validation rules to fields.
+- `...` → Means this field is required (cannot be omitted).
+- `min_length=3` → String must be at least 3 characters.
+- `max_length=100` → String cannot exceed 100 characters.
+
+```python
+price: float = Field(..., gt=0)
+```
+
+- `gt=0` → “greater than” - price must be strictly greater than 0.
+- Other options: `ge=0` (>=), `lt=X` (<), `le=X` (<=)
+
+```python
+stock: int = Field(..., ge=0)
+```
+
+- `ge=0` → “greater than or equal” - stock can be 0 or more.
+
+```python
+description: str = Field(None, max_length=500)
+```
+
+- `None` as default → This field is **optional**.
+- Can be omitted from request body.
+- `max_length=500` → If provided, max 500 characters.
+
+### Test It
+
+```bash
+# Valid request
+curl -X POST http://localhost:8000/products \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Keyboard",
+    "price": 79.99,
+    "stock": 20,
+    "description": "Mechanical keyboard"
+  }'
+# Returns: 201 Created with product data
+
+# Invalid request - name too short
+curl -X POST http://localhost:8000/products \
+  -H "Content-Type: application/json" \
+  -d '{"name": "PC", "price": 79.99, "stock": 20}'
+# Returns: 422 Validation Error - "String should have at least 3 characters"
+
+# Invalid request - negative price
+curl -X POST http://localhost:8000/products \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Keyboard", "price": -10, "stock": 20}'
+# Returns: 422 Validation Error - "Input should be greater than 0"
+```
+
+-----
+
+## **Problem 8: Multiple Response Models - Success and Error Cases**
+
+### Question
+
+Create endpoints for a task management system:
+
+- Create task (title, description, completed)
+- Get all tasks
+- Mark task as completed
+- Include proper status codes and error handling
+- GET, POST, PATCH endpoints
+
+### Solution
+
+```python
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
+from typing import List
+from enum import Enum
+
+app = FastAPI()
+
+# 1. Define Task model
+class Task(BaseModel):
+    id: int
+    title: str = Field(..., min_length=1, max_length=200)
+    description: str = Field(None, max_length=1000)
+    completed: bool = False
+
+# 2. Model for creating task (no id, completed defaults to False)
+class TaskCreate(BaseModel):
+    title: str = Field(..., min_length=1, max_length=200)
+    description: str = Field(None, max_length=1000)
+
+# 3. Model for updating task completion status
+class TaskUpdate(BaseModel):
+    completed: bool
+
+# 4. Error response model (optional but good practice)
+class ErrorResponse(BaseModel):
+    detail: str
+
+tasks_db = [
+    {"id": 1, "title": "Learn FastAPI", "description": "Complete FastAPI tutorial", "completed": False},
+    {"id": 2, "title": "Build API", "description": "Create REST API", "completed": True}
+]
+
+def get_next_task_id():
+    if not tasks_db:
+        return 1
+    return max(t["id"] for t in tasks_db) + 1
+
+# 5. GET all tasks
+@app.get("/tasks", response_model=List[Task])
+def get_all_tasks():
+    return tasks_db
+
+# 6. GET single task by ID
+@app.get("/tasks/{task_id}", response_model=Task)
+def get_task(task_id: int):
+    for task in tasks_db:
+        if task["id"] == task_id:
+            return task
+    raise HTTPException(status_code=404, detail="Task not found")
+
+# 7. POST - Create new task
+@app.post("/tasks", response_model=Task, status_code=201)
+def create_task(task_create: TaskCreate):
+    new_task = {
+        "id": get_next_task_id(),
+        "title": task_create.title,
+        "description": task_create.description,
+        "completed": False
+    }
+    tasks_db.append(new_task)
+    return new_task
+
+# 8. PATCH - Update task completion status
+@app.patch("/tasks/{task_id}", response_model=Task)
+def update_task(task_id: int, task_update: TaskUpdate):
+    for i, task in enumerate(tasks_db):
+        if task["id"] == task_id:
+            tasks_db[i]["completed"] = task_update.completed
+            return tasks_db[i]
+    raise HTTPException(status_code=404, detail="Task not found")
+
+# 9. DELETE task
+@app.delete("/tasks/{task_id}")
+def delete_task(task_id: int):
+    for i, task in enumerate(tasks_db):
+        if task["id"] == task_id:
+            deleted_task = tasks_db.pop(i)
+            return {"message": f"Task {task_id} deleted", "task": deleted_task}
+    raise HTTPException(status_code=404, detail="Task not found")
+```
+
+### Line-by-Line Explanation
+
+```python
+class TaskCreate(BaseModel):
+    title: str = Field(...)
+    description: str = Field(None, max_length=1000)
+```
+
+- Separate models for different operations.
+- `TaskCreate` for POST (no ID, completed is implicit False).
+
+```python
+class TaskUpdate(BaseModel):
+    completed: bool
+```
+
+- Minimal model for PATCH - only allows updating the `completed` field.
+
+```python
+@app.patch("/tasks/{task_id}", response_model=Task)
+```
+
+- `@app.patch()` → HTTP PATCH method for partial updates.
+- PATCH updates only specified fields (vs PUT which replaces entire resource).
+
+```python
+tasks_db[i]["completed"] = task_update.completed
+return tasks_db[i]
+```
+
+- Updates only the `completed` field.
+- Returns the full updated task.
+
+### Test It
+
+```bash
+# Create task
+curl -X POST http://localhost:8000/tasks \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Test task", "description": "Testing"}'
+
+# Get all tasks
+curl http://localhost:8000/tasks
+
+# Get single task
+curl http://localhost:8000/tasks/1
+
+# Update task completion
+curl -X PATCH http://localhost:8000/tasks/1 \
+  -H "Content-Type: application/json" \
+  -d '{"completed": true}'
+
+# Delete task
+curl -X DELETE http://localhost:8000/tasks/1
+```
+
+-----
+
+## **Problem 9: Working with Nested Models**
+
+### Question
+
+Create an endpoint that:
+
+- Creates a blog post with comments
+- Blog post has: title, content, author (nested)
+- Author has: name, email
+- Comments are a list of comment objects
+- POST and GET endpoints
+
+### Solution
+
+```python
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
+from typing import List
+from datetime import datetime
+
+app = FastAPI()
+
+# 1. Define nested Author model
+class Author(BaseModel):
+    name: str = Field(..., min_length=1)
+    email: str = Field(..., min_length=5)
+
+# 2. Define Comment model
+class Comment(BaseModel):
+    id: int
+    text: str = Field(..., min_length=1, max_length=500)
+    author_name: str
+    created_at: str
+
+# 3. Define BlogPost model with nested structures
+class BlogPost(BaseModel):
+    id: int
+    title: str = Field(..., min_length=1, max_length=200)
+    content: str = Field(..., min_length=1)
+    author: Author  # Nested object
+    comments: List[Comment] = []  # List of nested objects
+    created_at: str
+
+# 4. Model for creating blog post (without id and created_at)
+class BlogPostCreate(BaseModel):
+    title: str = Field(..., min_length=1, max_length=200)
+    content: str = Field(..., min_length=1)
+    author: Author  # Still include nested author
+
+# 5. Model for adding comments
+class CommentCreate(BaseModel):
+    text: str = Field(..., min_length=1, max_length=500)
+    author_name: str
+
+posts_db = [
+    {
+        "id": 1,
+        "title": "Getting Started with FastAPI",
+        "content": "FastAPI is a modern web framework...",
+        "author": {"name": "John Doe", "email": "john@example.com"},
+        "comments": [
+            {"id": 1, "text": "Great post!", "author_name": "Jane", "created_at": "2024-01-01"}
+        ],
+        "created_at": "2024-01-01"
+    }
+]
+
+def get_next_post_id():
+    if not posts_db:
+        return 1
+    return max(p["id"] for p in posts_db) + 1
+
+def get_next_comment_id(post_id: int):
+    post = next((p for p in posts_db if p["id"] == post_id), None)
+    if not post or not post["comments"]:
+        return 1
+    return max(c["id"] for c in post["comments"]) + 1
+
+# 6. POST - Create new blog post
+@app.post("/posts", response_model=BlogPost, status_code=201)
+def create_post(post_create: BlogPostCreate):
+    new_post = {
+        "id": get_next_post_id(),
+        "title": post_create.title,
+        "content": post_create.content,
+        "author": {
+            "name": post_create.author.name,
+            "email": post_create.author.email
+        },
+        "comments": [],
+        "created_at": datetime.now().isoformat()
+    }
+    posts_db.append(new_post)
+    return new_post
+
+# 7. GET all posts
+@app.get("/posts", response_model=List[BlogPost])
+def get_all_posts():
+    return posts_db
+
+# 8. GET single post by ID
+@app.get("/posts/{post_id}", response_model=BlogPost)
+def get_post(post_id: int):
+    for post in posts_db:
+        if post["id"] == post_id:
+            return post
+    raise HTTPException(status_code=404, detail="Post not found")
+
+# 9. POST - Add comment to post
+@app.post("/posts/{post_id}/comments", response_model=BlogPost)
+def add_comment(post_id: int, comment_create: CommentCreate):
+    for post in posts_db:
+        if post["id"] == post_id:
+            # Create new comment
+            new_comment = {
+                "id": get_next_comment_id(post_id),
+                "text": comment_create.text,
+                "author_name": comment_create.author_name,
+                "created_at": datetime.now().isoformat()
+            }
+            # Add to comments list
+            post["comments"].append(new_comment)
+            # Return updated post
+            return post
+    
+    raise HTTPException(status_code=404, detail="Post not found")
+```
+
+### Line-by-Line Explanation
+
+```python
+class Author(BaseModel):
+    name: str = Field(..., min_length=1)
+    email: str = Field(..., min_length=5)
+```
+
+- Defines a **nested model** - Author is a model within BlogPost.
+
+```python
+class BlogPost(BaseModel):
+    ...
+    author: Author  # Nested object
+    comments: List[Comment] = []  # List of nested objects
+```
+
+- `author: Author` → Expects an Author object (not just a string).
+- `comments: List[Comment] = []` → List of Comment objects, defaults to empty list.
+
+```python
+class BlogPostCreate(BaseModel):
+    ...
+    author: Author  # Still include nested author
+```
+
+- Request model also includes the nested Author object.
+- Client must provide author data in the request.
+
+```python
+"author": {
+    "name": post_create.author.name,
+    "email": post_create.author.email
+}
+```
+
+- Accessing nested object fields using dot notation.
+- `post_create.author.name` accesses the name field of the Author object.
+
+```python
+new_comment = {
+    "id": get_next_comment_id(post_id),
+    "text": comment_create.text,
+    "author_name": comment_create.author_name,
+    "created_at": datetime.now().isoformat()
+}
+post["comments"].append(new_comment)
+```
+
+- Creates a comment dictionary.
+- Appends to the `comments` list of the post.
+
+### Test It
+
+```bash
+# Create blog post
+curl -X POST http://localhost:8000/posts \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Python Best Practices",
+    "content": "Always write clean code...",
+    "author": {
+      "name": "Alice Smith",
+      "email": "alice@example.com"
+    }
+  }'
+
+# Get all posts
+curl http://localhost:8000/posts
+
+# Add comment to post
+curl -X POST http://localhost:8000/posts/1/comments \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Excellent article!",
+    "author_name": "Bob Johnson"
+  }'
+```
+
+-----
+
+## **Problem 10: Combining Everything - E-Commerce API**
+
+### Question
+
+Build a mini e-commerce API with:
+
+- Products CRUD operations
+- Shopping cart (per session/user)
+- Add/remove items from cart
+- Calculate total price
+- Place order (converts cart to order)
+
+### Solution
+
+```python
+from fastapi import FastAPI, HTTPException, Query
+from pydantic import BaseModel, Field
+from typing import List, Optional, Dict
+from datetime import datetime
+from enum import Enum
+
+app = FastAPI()
+
+# ===== MODELS =====
+
+class Product(BaseModel):
+    id: int
+    name: str = Field(..., min_length=1)
+    price: float = Field(..., gt=0)
+    stock: int = Field(..., ge=0)
+
+class ProductCreate(BaseModel):
+    name: str = Field(..., min_length=1)
+    price: float = Field(..., gt=0)
+    stock: int = Field(..., ge=0)
+
+class CartItem(BaseModel):
+    product_id: int
+    quantity: int = Field(..., gt=0)
     name: str
     price: float
-app = FastAPI()
-@app.post("/items/")
-async def create_item(item: Item):
-    return {"item": item}
-Question 3: Path and query params
-from fastapi import FastAPI
-app = FastAPI()
-@app.get("/items/{item_id}")
-async def read_item(item_id: int, q: str | None = None):
-    return {"item_id": item_id, "q": q}
-Question 4: Dependency injection
-from fastapi import FastAPI, Depends
-app = FastAPI()
-async def common_params(q: str | None = None):
-    return {"q": q}
-@app.get("/items/")
-async def read_items(commons: dict = Depends(common_params)):
-    return commons
-Question 5: HTTPException handling
-from fastapi import FastAPI, HTTPException
-app = FastAPI()
-@app.get("/items/{item_id}")
-async def read_item(item_id: int):
-    if item_id != 1:
-        raise HTTPException(status_code=404, detail="Item not found")
-    return {"item_id": item_id}
-Question 6: File upload
-from fastapi import FastAPI, UploadFile, File
-app = FastAPI()
-@app.post("/upload/")
-async def upload_file(file: UploadFile = File(...)):
-    contents = await file.read()
-    return {"filename": file.filename, "size": len(contents)}
-Question 7: Background tasks
-from fastapi import FastAPI, BackgroundTasks
-app = FastAPI()
-def write_log(message: str):
-    with open("log.txt", "a") as f:
-        f.write(message + "\n")
-@app.post("/tasks/")
-async def run_task(background_tasks: BackgroundTasks):
-    background_tasks.add_task(write_log, "Task completed")
-    return {"message": "Task started"}
-Question 8: WebSocket
-from fastapi import FastAPI, WebSocket
-app = FastAPI()
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    while True:
-        data = await websocket.receive_text()
-        await websocket.send_text(f"Echo: {data}")
-Question 9: Custom middleware
-from fastapi import FastAPI
-import time
-app = FastAPI()
-@app.middleware("http")
-async def add_process_time_header(request, call_next):
-    start_time = time.time()
-    response = await call_next(request)
-    process_time = time.time() - start_time
-    response.headers["X-Process-Time"] = str(process_time)
-    return response
-Question 10: OAuth2 JWT auth
-from fastapi import FastAPI, Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer
-app = FastAPI()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-async def get_current_user(token: str = Depends(oauth2_scheme)):
-    if token != "fake-jwt":
-        raise HTTPException(401, "Invalid token")
-    return {"user": "test"}
-@app.get("/users/me")
-async def read_users_me(current_user: dict = Depends(get_current_user)):
-    return current_user
+    subtotal: float
 
+class Cart(BaseModel):
+    items: List[CartItem]
+    total_price: float
 
+class OrderStatus(str, Enum):
+    PENDING = "pending"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
+
+class Order(BaseModel):
+    id: int
+    items: List[CartItem]
+    total_price: float
+    status: OrderStatus
+    created_at: str
+
+# ===== DATABASES =====
+
+products_db = [
+    {"id": 1, "name": "Laptop", "price": 999.99, "stock": 5},
+    {"id": 2, "name": "Mouse", "price": 29.99, "stock": 50},
+    {"id": 3, "name": "Keyboard", "price": 79.99, "stock": 30}
+]
+
+# 1. Cart storage - keyed by user_id or session_id
+carts_db: Dict[str, List[Dict]] = {}
+
+# 2. Orders storage
+orders_db = []
+
+# ===== HELPER FUNCTIONS =====
+
+def get_next_product_id():
+    if not products_db:
+        return 1
+    return max(p["id"] for p in products_db) + 1
+
+def get_next_order_id():
+    if not orders_db:
+        return 1
+    return max(o["id"] for o in orders_db) + 1
+
+def find_product(product_id: int):
+    """3. Find product by ID, raise 404 if not found"""
+    for product in products_db:
+        if product["id"] == product_id:
+            return product
+    raise HTTPException(status_code=404, detail="Product not found")
+
+def get_or_create_cart(user_id: str):
+    """4. Get user's cart or create if doesn't exist"""
+    if user_id not in carts_db:
+        carts_db[user_id] = []
+    return carts_db[user_id]
+
+def calculate_cart_total(cart_items):
+    """5. Calculate total price of cart"""
+    return sum(item["subtotal"] for item in cart_items)
+
+# ===== PRODUCT ENDPOINTS =====
+
+@app.post("/products", response_model=Product, status_code=201)
+def create_product(product_create: ProductCreate):
+    new_product = {
+        "id": get_next_product_id(),
+        "name": product_create.name,
+        "price": product_create.price,
+        "stock": product_create.stock
+    }
+    products_db.append(new_product)
+    return new_product
+
+@app.get("/products", response_model=List[Product])
+def get_products(skip: int = 0, limit: int = 10):
+    """6. Get all products with pagination"""
+    return products_db[skip : skip + limit]
+
+@app.get("/products/{product_id}", response_model=Product)
+def get_product(product_id: int):
+    return find_product(product_id)
+
+# ===== CART ENDPOINTS =====
+
+@app.post("/cart/add")
+def add_to_cart(
+    user_id: str,
+    product_id: int,
+    quantity: int = Query(..., gt=0)
+):
+    """7. Add item to cart with quantity"""
+    # Find product
+    product = find_product(product_id)
+    
+    # Check stock
+    if product["stock"] < quantity:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Not enough stock. Available: {product['stock']}"
+        )
+    
+    # Get user's cart
+    cart = get_or_create_cart(user_id)
+    
+    # Check if product already in cart
+    for item in cart:
+        if item["product_id"] == product_id:
+            # Update quantity
+            item["quantity"] += quantity
+            item["subtotal"] = item["quantity"] * item["price"]
+            return {"message": "Item quantity updated"}
+    
+    # Add new item to cart
+    new_item = {
+        "product_id": product_id,
+        "quantity": quantity,
+        "name": product["name"],
+        "price": product["price"],
+        "subtotal": quantity * product["price"]
+    }
+    cart.append(new_item)
+    
+    return {"message": "Item added to cart"}
+
+@app.get("/cart")
+def get_cart(user_id: str):
+    """8. Get user's cart with total"""
+    cart_items = get_or_create_cart(user_id)
+    return Cart(
+        items=cart_items,
+        total_price=calculate_cart_total(cart_items)
+    )
+
+@app.delete("/cart/remove")
+def remove_from_cart(user_id: str, product_id: int):
+    """9. Remove item from cart"""
+    cart = get_or_create_cart(user_id)
+    
+    # Find and remove item
+    for i, item in enumerate(cart):
+        if item["product_id"] == product_id:
+            removed_item = cart.pop(i)
+            return {
+                "message": f"Item {product_id} removed from cart",
+                "removed_item": removed_item
+            }
+    
+    raise HTTPException(status_code=404, detail="Item not in cart")
+
+@app.delete("/cart/clear")
+def clear_cart(user_id: str):
+    """10. Clear entire cart"""
+    if user_id in carts_db:
+        carts_db[user_id] = []
+    return {"message": "Cart cleared"}
+
+# ===== ORDER ENDPOINTS =====
+
+@app.post("/orders", response_model=Order, status_code=201)
+def create_order(user_id: str):
+    """11. Convert cart to order"""
+    cart = get_or_create_cart(user_id)
+    
+    # Check cart is not empty
+    if not cart:
+        raise HTTPException(status_code=400, detail="Cart is empty")
+    
+    # Create order
+    new_order = {
+        "id": get_next_order_id(),
+        "items": cart.copy(),  # Copy cart items
+        "total_price": calculate_cart_total(cart),
+        "status": "completed",
+        "created_at": datetime.now().isoformat()
+    }
+    
+    # Add to orders database
+    orders_db.append(new_order)
+    
+    # Clear the user's cart
+    carts_db[user_id] = []
+    
+    return new_order
+
+@app.get("/orders", response_model=List[Order])
+def get_orders(user_id: Optional[str] = None):
+    """12. Get all orders (optionally filtered by user)"""
+    if user_id:
+        # Filter orders by user (in real app, would track user_id in order)
+        return orders_db
+    return orders_db
+
+@app.get("/orders/{order_id}", response_model=Order)
+def get_order(order_id: int):
+    """13. Get single order by ID"""
+    for order in orders_db:
+        if order["id"] == order_id:
+            return order
+    raise HTTPException(status_code=404, detail="Order not found")
+```
+
+### Line-by-Line Explanation - Key Concepts
+
+```python
+carts_db: Dict[str, List[Dict]] = {}
+```
+
+- **Type hint:** `Dict[str, List[Dict]]`
+- Key is user_id (string), value is list of cart items (list of dicts).
+- Stores multiple carts, one per user.
+
+```python
+if user_id not in carts_db:
+    carts_db[user_id] = []
+return carts_db[user_id]
+```
+
+- Checks if user has a cart.
+- Creates empty cart if doesn’t exist.
+- Returns the user’s cart.
+
+```python
+def calculate_cart_total(cart_items):
+    return sum(item["subtotal"] for item in cart_items)
+```
+
+- **Generator expression:** Iterates through items and sums subtotals.
+- Efficient way to calculate totals.
+
+```python
+@app.post("/cart/add")
+def add_to_cart(
+    user_id: str,
+    product_id: int,
+    quantity: int = Query(..., gt=0)
+):
+```
+
+- `user_id` is a query parameter (not in path).
+- `Query(...)` makes it required query parameter.
+- `gt=0` validates quantity is positive.
+
+```python
+for item in cart:
+    if item["product_id"] == product_id:
+        item["quantity"] += quantity
+        item["subtotal"] = item["quantity"] * item["price"]
+        return {"message": "Item quantity updated"}
+```
+
+- Checks if product already in cart.
+- If yes, updates quantity and subtotal.
+- Early return prevents adding duplicate.
+
+```python
+cart = get_or_create_cart(user_id)
+new_order = {
+    ...
+    "items": cart.copy(),  # Copy cart items
+    ...
+}
+carts_db[user_id] = []  # Clear the cart
+```
+
+- `cart.copy()` creates a **shallow copy** of the list.
+- This preserves order items without referencing the original cart.
+
+### Test It
+
+```bash
+# Create products
+curl -X POST http://localhost:8000/products \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Monitor", "price": 299.99, "stock": 10}'
+
+# Add item to cart (user1)
+curl -X POST "http://localhost:8000/cart/add?user_id=user1&product_id=1&quantity=2"
+
+# Add another item
+curl -X POST "http://localhost:8000/cart/add?user_id=user1&product_id=2&quantity=1"
+
+# View cart
+curl "http://localhost:8000/cart?user_id=user1"
+
+# Remove item from cart
+curl -X DELETE "http://localhost:8000/cart/remove?user_id=user1&product_id=2"
+
+# Place order
+curl -X POST "http://localhost:8000/orders?user_id=user1"
+
+# Get order
+curl "http://localhost:8000/orders/1"
+```
+
+-----
+
+## Summary Table
+
+|Problem|Concept          |Key Endpoints              |HTTP Methods                 |
+|-------|-----------------|---------------------------|-----------------------------|
+|1      |Basic GET        |`/users`                   |GET                          |
+|2      |Path Parameters  |`/users/{id}`              |GET                          |
+|3      |POST Request     |`/users`                   |POST                         |
+|4      |PUT Request      |`/users/{id}`              |PUT                          |
+|5      |DELETE Request   |`/users/{id}`              |DELETE                       |
+|6      |Query Parameters |`/users?name=X&skip=Y`     |GET                          |
+|7      |Validation       |`/products`                |POST                         |
+|8      |Multiple Models  |`/tasks`                   |GET, POST, PATCH, DELETE     |
+|9      |Nested Models    |`/posts`                   |GET, POST, PATCH             |
+|10     |Full CRUD + Logic|`/products, /cart, /orders`|GET, POST, PUT, PATCH, DELETE|
+
+-----
+
+## Running the Code
+
+### Save as `app.py`
+
+```python
+# Copy any solution code above
+```
+
+### Install Dependencies
+
+```bash
+pip install fastapi uvicorn
+```
+
+### Run Server
+
+```bash
+python app.py
+
+# Or
+uvicorn app:app --reload
+```
+
+### Access Documentation
+
+- Swagger UI: `http://localhost:8000/docs`
+- ReDoc: `http://localhost:8000/redoc`
+
+-----
+
+## Key Takeaways
+
+✅ **Pydantic Models** → Type validation & serialization  
+✅ **HTTP Methods** → GET (read), POST (create), PUT (replace), PATCH (update), DELETE (remove)  
+✅ **Path Parameters** → `/users/{user_id}` - extracted from URL  
+✅ **Query Parameters** → `/users?name=X` - optional filters  
+✅ **Request Body** → JSON data in POST/PUT/PATCH  
+✅ **Status Codes** → 200 (OK), 201 (Created), 400 (Bad Request), 404 (Not Found), 422 (Validation Error)  
+✅ **Error Handling** → HTTPException for proper HTTP responses  
+✅ **In-Memory Storage** → Lists and dicts for practice (use database in production)
+
+Happy learning! 🚀
 
 
 

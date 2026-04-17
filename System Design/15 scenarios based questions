@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Design: 15 Real-World Scenarios</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: 'Georgia', 'Garamond', serif;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: #e2e8f0;
+        line-height: 1.8;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    header {
+        text-align: center;
+        margin-bottom: 50px;
+        padding: 40px 20px;
+        border-bottom: 2px solid #64748b;
+    }
+
+    h1 {
+        font-size: 2.8em;
+        font-weight: normal;
+        letter-spacing: 2px;
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, #60a5fa, #f472b6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .subtitle {
+        font-size: 1.1em;
+        color: #cbd5e1;
+        font-style: italic;
+    }
+
+    .question-block {
+        background: rgba(30, 41, 59, 0.8);
+        border: 1px solid #475569;
+        border-radius: 8px;
+        margin-bottom: 40px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .question-block:hover {
+        border-color: #64748b;
+        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+    }
+
+    .question-number {
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        color: white;
+        padding: 15px 25px;
+        font-size: 1.3em;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+
+    .question-text {
+        padding: 25px;
+        font-size: 1.2em;
+        color: #60a5fa;
+        font-weight: 500;
+        border-bottom: 1px solid #334155;
+        line-height: 1.6;
+    }
+
+    .answer-section {
+        padding: 25px;
+    }
+
+    .answer-title {
+        font-size: 1em;
+        color: #f472b6;
+        font-weight: 600;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .answer-text {
+        color: #cbd5e1;
+        margin-bottom: 20px;
+        font-size: 0.95em;
+        line-height: 1.8;
+    }
+
+    .answer-bullets {
+        list-style: none;
+        color: #cbd5e1;
+        font-size: 0.95em;
+    }
+
+    .answer-bullets li {
+        margin-bottom: 12px;
+        padding-left: 20px;
+        position: relative;
+    }
+
+    .answer-bullets li:before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: #60a5fa;
+        font-weight: bold;
+    }
+
+    .diagram-container {
+        background: rgba(15, 23, 42, 0.5);
+        border: 1px dashed #475569;
+        border-radius: 6px;
+        padding: 20px;
+        margin-top: 20px;
+        overflow-x: auto;
+    }
+
+    .diagram-title {
+        font-size: 0.85em;
+        color: #94a3b8;
+        margin-bottom: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    svg {
+        display: block;
+        margin: 0 auto;
+        max-width: 100%;
+    }
+
+    pre {
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid #334155;
+        border-radius: 4px;
+        padding: 15px;
+        overflow-x: auto;
+        color: #a1f77f;
+        font-family: 'Monaco', 'Courier New', monospace;
+        font-size: 0.85em;
+        line-height: 1.4;
+    }
+
+    footer {
+        text-align: center;
+        color: #64748b;
+        margin-top: 50px;
+        padding: 30px;
+        border-top: 2px solid #475569;
+        font-size: 0.95em;
+    }
+
+    @media (max-width: 768px) {
+        h1 { font-size: 2em; }
+        .question-text { font-size: 1em; }
+        .answer-section { padding: 15px; }
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>System Design Mastery</h1>
+            <p class="subtitle">15 Real-World Scenarios Explained Simply</p>
+        </header>
+
+```
+    <!-- Q1 -->
+    <div class="question-block">
+        <div class="question-number">1</div>
+        <div class="question-text">How does Hotstar handle millions of viewers during IPL matches without crashing?</div>
+        <div class="answer-section">
+            <div class="answer-title">Answer: Load Balancing & Distributed Servers</div>
+            <div class="answer-text">
+                Hotstar doesn't use just one server—it uses <strong>thousands of servers spread across different locations</strong>. When a match starts, traffic is automatically split among all servers so no single server gets overloaded.
+            </div>
+            <ul class="answer-bullets">
+                <li><strong>Load Balancer:</strong> Acts like a traffic cop, directing each user to the least busy server</li>
+                <li><strong>Multiple Data Centers:</strong> Servers in Mumbai, Delhi, Chennai etc., so users connect to the nearest one (faster + less load)</li>
+                <li><strong>Auto-scaling:</strong> If traffic spikes (IPL starts), system automatically spins up more servers</li>
+                <li><strong>Caching:</strong> Popular data (live score, video frame) is cached so servers don't recalculate</li>
+            </ul>
+            <div class="diagram-container">
+                <div class="diagram-title">📊 Traffic Distribution Across Servers</div>
+                <svg width="100%" height="300" viewBox="0 0 500 300">
+                    <defs>
+                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <!-- Users -->
+                    <circle cx="50" cy="50" r="20" fill="#f472b6" opacity="0.7"/>
+                    <circle cx="120" cy="40" r="20" fill="#f472b6" opacity="0.7"/>
+                    <circle cx="190" cy="45" r="20" fill="#f472b6" opacity="0.7"/>
+                    <circle cx="260" cy="50" r="20" fill="#f472b6" opacity="0.7"/>
+                    <circle cx="330" cy="40" r="20" fill="#f472b6" opacity="0.7"/>
+                    <text x="185" y="120" font-size="14" fill="#60a5fa" font-weight="bold">LOAD BALANCER</text>
+                    <rect x="100" y="110" width="170" height="30" fill="none" stroke="#60a5fa" stroke-width="2" rx="5"/>
+                    
+                    <!-- Arrows from users to load balancer -->
+                    <path d="M 50 70 Q 100 90 150 110" stroke="#f472b6" stroke-width="2" fill="none" marker-end="url(#arrowhead1)"/>
+                    <path d="M 120 60 Q 140 90 160 110" stroke="#f472b6" stroke-width="2" fill="none" marker-end="url(#arrowhead1)"/>
+                    <path d="M 190 65 Q 190 90 185 110" stroke="#f472b6" stroke-width="2" fill="none" marker-end="url(#arrowhead1)"/>
+                    <path d="M 260 70 Q 230 90 210 110" stroke="#f472b6" stroke-width="2" fill="none" marker-end="url(#arrowhead1)"/>
+                    <path d="M 330 60 Q 280 90 220 110" stroke="#f472b6" stroke-width="2" fill="none" marker-end="url(#arrowhead1)"/>
+                    
+                    <!-- Servers -->
+                    <rect x="50" y="180" width="80" height="60" fill="url(#grad1)" rx="5" opacity="0.8"/>
+                    <text x="65" y="215" font-size="12" fill="white" font-weight="bold">Server 1</text>
+                    <text x="65" y="230" font-size="10" fill="#cbd5e1">2000 users</text>
+                    
+                    <rect x="160" y="180" width="80" height="60" fill="url(#grad1)" rx="5" opacity="0.8"/>
+                    <text x="175" y="215" font-size="12" fill="white" font-weight="bold">Server 2</text>
+                    <text x="175" y="230" font-size="10" fill="#cbd5e1">2100 users</text>
+                    
+                    <rect x="270" y="180" width="80" height="60" fill="url(#grad1)" rx="5" opacity="0.8"/>
+                    <text x="285" y="215" font-size="12" fill="white" font-weight="bold">Server 3</text>
+                    <text x="285" y="230" font-size="10" fill="#cbd5e1">1950 users</text>
+                    
+                    <!-- Arrows from load balancer to servers -->
+                    <path d="M 140 140 L 90 180" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#arrowhead2)"/>
+                    <path d="M 185 140 L 200 180" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#arrowhead2)"/>
+                    <path d="M 230 140 L 310 180" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#arrowhead2)"/>
+                    
+                    <defs>
+                        <marker id="arrowhead1" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#f472b6"/>
+                        </marker>
+                        <marker id="arrowhead2" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#60a5fa"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="question-block">
+        <div class="question-number">2</div>
+        <div class="question-text">Ticket sale scenario: 10,000 people trying to buy 1 seat simultaneously. How does the system ensure only 1 gets it?</div>
+        <div class="answer-section">
+            <div class="answer-title">Answer: Database Locks & Transactions</div>
+            <div class="answer-text">
+                The system uses <strong>database locks</strong> to prevent race conditions. Think of it like a physical ticket booth with one cashier—only one person can complete their transaction at a time.
+            </div>
+            <ul class="answer-bullets">
+                <li><strong>Atomic Transaction:</strong> Check if seat is available → Reserve it → Update inventory (all or nothing)</li>
+                <li><strong>Database Lock:</strong> When first person starts buying, the database locks that seat temporarily</li>
+                <li><strong>Others Wait:</strong> Other 9,999 people's requests wait until lock is released</li>
+                <li><strong>First Wins:</strong> First person completes purchase → Seat marked sold → Lock releases</li>
+                <li><strong>Others Fail:</strong> When next person's request executes, seat is no longer available → transaction fails gracefully</li>
+            </ul>
+            <div class="diagram-container">
+                <div class="diagram-title">🔒 Atomic Transaction Process</div>
+                <pre>TIME SEQUENCE:
+```
+
+T0: 10,000 requests arrive simultaneously
+T1: Person #1’s transaction starts → Database LOCKS seat
+✓ Check: Seat available? YES
+✓ Reserve: Update DB → Seat owned by Person #1
+✓ Confirm: Payment processed
+→ LOCK RELEASED
+
+T1-T1000: While Person #1 executes:
+Person #2: Request arrives → WAIT (seat locked)
+Person #3: Request arrives → WAIT (seat locked)
+… (9,999 waiting)
+
+T2: Next request executes (let’s say Person #100’s turn)
+✗ Check: Seat available? NO (Person #1 owns it)
+✗ Reject: “Sold out” message sent
+→ Transaction rolled back, no changes</pre>
+</div>
+</div>
+</div>
+
+```
+    <!-- Q3 -->
+    <div class="question-block">
+        <div class="question-number">3</div>
+        <div class="question-text">How does Uber show your driver's real-time location on the map (updates every 1-2 seconds)?</div>
+        <div class="answer-section">
+            <div class="answer-title">Answer: WebSockets & Real-Time Messaging</div>
+            <div class="answer-text">
+                Instead of asking the server "where is driver?" every 1 second (wasteful), the driver's phone <strong>continuously pushes location updates</strong> to the server, which immediately broadcasts to your phone. It's like having an open phone line instead of calling back and forth.
+            </div>
+            <ul class="answer-bullets">
+                <li><strong>WebSocket:</strong> Open, persistent connection between driver's phone and server (not HTTP requests)</li>
+                <li><strong>Location Push:</strong> Driver's GPS sends new location every 1-2 seconds</li>
+                <li><strong>Broadcast:</strong> Server instantly sends this to your phone (and Uber's backend)</li>
+                <li><strong>Low Latency:</strong> Your map updates in real-time (no delay like HTTP polling would have)</li>
+                <li><strong>Battery Efficient:</strong> Connection stays open (fewer handshakes) vs repeated HTTP requests</li>
+            </ul>
+            <div class="diagram-container">
+                <div class="diagram-title">📡 Real-Time Location Broadcasting</div>
+                <svg width="100%" height="280" viewBox="0 0 500 280">
+                    <!-- Driver Phone -->
+                    <rect x="30" y="40" width="70" height="100" fill="#f472b6" rx="5" opacity="0.7"/>
+                    <text x="45" y="100" font-size="11" fill="white" font-weight="bold">Driver</text>
+                    <text x="35" y="120" font-size="9" fill="white">📍 10.45°N</text>
+                    <circle cx="65" cy="155" r="5" fill="#60a5fa"/>
+                    <text x="50" y="175" font-size="10" fill="#cbd5e1">GPS Data</text>
+                    
+                    <!-- Server -->
+                    <rect x="200" y="40" width="100" height="100" fill="#8b5cf6" rx="5" opacity="0.7"/>
+                    <text x="225" y="105" font-size="12" fill="white" font-weight="bold">Uber Server</text>
+                    <circle cx="250" cy="30" r="3" fill="#60a5fa"/>
+                    <circle cx="250" cy="35" r="3" fill="#60a5fa"/>
+                    <circle cx="250" cy="40" r="3" fill="#60a5fa"/>
+                    
+                    <!-- Customer Phone -->
+                    <rect x="380" y="40" width="70" height="100" fill="#f472b6" rx="5" opacity="0.7"/>
+                    <text x="395" y="100" font-size="11" fill="white" font-weight="bold">You</text>
+                    <text x="395" y="120" font-size="9" fill="white">Your Map</text>
+                    <circle cx="415" cy="155" r="5" fill="#fbbf24"/>
+                    <text x="395" y="175" font-size="10" fill="#cbd5e1">Live Pin</text>
+                    
+                    <!-- WebSocket arrows (continuous) -->
+                    <path d="M 100 90 L 200 90" stroke="#60a5fa" stroke-width="2.5" fill="none" marker-end="url(#arrowhead3)"/>
+                    <text x="130" y="85" font-size="10" fill="#60a5fa" font-weight="bold">WebSocket</text>
+                    <text x="115" y="105" font-size="9" fill="#cbd5e1">(continuous)</text>
+                    
+                    <!-- Server to You arrows (continuous) -->
+                    <path d="M 300 90 L 380 90" stroke="#fbbf24" stroke-width="2.5" fill="none" marker-end="url(#arrowhead4)"/>
+                    <text x="320" y="85" font-size="10" fill="#fbbf24" font-weight="bold">Push Update</text>
+                    <text x="315" y="105" font-size="9" fill="#cbd5e1">(instant)</text>
+                    
+                    <!-- Timeline -->
+                    <text x="30" y="210" font-size="12" fill="#60a5fa" font-weight="bold">Timeline:</text>
+                    <text x="30" y="235" font-size="10" fill="#cbd5e1">T=0s: Driver at 10.450°N → Server receives → Your phone updates</text>
+                    <text x="30" y="255" font-size="10" fill="#cbd5e1">T=1s: Driver at 10.451°N → Server receives → Your phone updates</text>
+                    <text x="30" y="275" font-size="10" fill="#cbd5e1">T=2s: Driver at 10.452°N → Server receives → Your phone updates (repeat)</text>
+                    
+                    <defs>
+                        <marker id="arrowhead3" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#60a5fa"/>
+                        </marker>
+                        <marker id="arrowhead4" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#fbbf24"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="question-block">
+        <div class="question-number">4</div>
+        <div class="question-text">What is HTTP 429 "Too Many Requests" and why does a system send it?</div>
+        <div class="answer-section">
+            <div class="answer-title">Answer: Rate Limiting to Protect Services</div>
+            <div class="answer-text">
+                <strong>HTTP 429</strong> is the server saying "slow down!" It happens when someone makes too many requests too fast. The server sends this to prevent abuse and protect itself from getting overwhelmed.
+            </div>
+            <ul class="answer-bullets">
+                <li><strong>What triggers it:</strong> Example: trying to login 100 times per second, or scraping a website rapidly</li>
+                <li><strong>Rate Limiting Rule:</strong> "Maximum 100 requests per minute per user" (or per IP address)</li>
+                <li><strong>Counter Logic:</strong> Server counts requests. If limit exceeded → sends 429 response</li>
+                <li><strong>Retry-After Header:</strong> Server includes "wait 60 seconds then try again" in response</li>
+                <li><strong>Why it exists:</strong> Prevents DDoS attacks, prevents accidental crashes from buggy clients, protects API quotas</li>
+            </ul>
+            <div class="diagram-container">
+                <div class="diagram-title">⏱️ Rate Limiting in Action</div>
+                <pre>Request Scenario (limit: 10 req/minute):
+```
+
+Request #1 → ✓ OK (9 remaining)
+Request #2 → ✓ OK (8 remaining)
+Request #3 → ✓ OK (7 remaining)
+…
+Request #10 → ✓ OK (0 remaining)
+
+Request #11 → ✗ HTTP 429 Too Many Requests
+“Retry-After: 60”
+(Come back in 60 seconds)
+
+Request #12 → ✗ HTTP 429
+Request #13 → ✗ HTTP 429
+…
+(wait 60 seconds)
+
+Request #11 (after 60s) → ✓ OK (quota reset)</pre>
+</div>
+</div>
+</div>
+
+```
+    <!-- Q5 -->
+    <div class="question-block">
+        <div class="question-number">5</div>
+        <div class="question-text">Netflix shows you personalized recommendations instantly. How does it handle millions of users' watch history?</div>
+        <div class="answer-section">
+            <div class="answer-title">Answer: Caching & Pre-Computation</div>
+            <div class="answer-text">
+                Netflix <strong>doesn't calculate recommendations on-the-fly</strong> for every user. Instead, it pre-computes popular recommendations and stores them in fast caches, so your phone gets results in milliseconds.
+            </div>
+            <ul class="answer-bullets">
+                <li><strong>Batch Processing:</strong> Every night, system analyzes all user watch data (millions of users) and generates recommendations</li>
+                <li><strong>Cache Storage:</strong> Results stored in Redis/Memcached (extremely fast in-memory database)</li>
+                <li><strong>Instant Lookup:</strong> When you open Netflix, recommendation is fetched from cache (not recalculated)</li>
+                <li><strong>Periodical Updates:</strong> Cache refreshes every 6-12 hours as new data comes in</li>
+                <li><strong>CDN Distribution:</strong> Cached data replicated across data centers so your nearest server has it</li>
+            </ul>
+            <div class="diagram-container">
+                <div class="diagram-title">⚡ Caching & Recommendation Pipeline</div>
+                <svg width="100%" height="280" viewBox="0 0 500 280">
+                    <defs>
+                        <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#f97316;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- Batch Processing (Night) -->
+                    <text x="30" y="25" font-size="12" fill="#60a5fa" font-weight="bold">BATCH PROCESSING (Night)</text>
+                    <rect x="30" y="40" width="420" height="50" fill="rgba(96, 165, 250, 0.1)" stroke="#60a5fa" stroke-width="1" stroke-dasharray="5,5" rx="4"/>
+                    <text x="50" y="60" font-size="10" fill="#cbd5e1">User A watches:</text>
+                    <text x="50" y="75" font-size="9" fill="#cbd5e1">Action movies, Sci-fi → Algorithm: "Recommend Avengers, Dune"</text>
+                    <text x="50" y="92" font-size="9" fill="#cbd5e1">(Millions of users processed simultaneously)</text>
+                    
+                    <!-- Cache -->
+                    <text x="30" y="130" font-size="12" fill="#fbbf24" font-weight="bold">IN-MEMORY CACHE (Redis)</text>
+                    <rect x="30" y="145" width="180" height="70" fill="url(#grad2)" rx="4" opacity="0.8"/>
+                    <text x="50" y="165" font-size="10" fill="white" font-weight="bold">User A → [Movie1, Movie2, Movie3]</text>
+                    <text x="50" y="185" font-size="10" fill="white" font-weight="bold">User B → [Movie4, Movie5, Movie6]</text>
+                    <text x="50" y="205" font-size="9" fill="#cbd5e1">(Millions of entries, instant lookup)</text>
+                    
+                    <!-- Your Phone -->
+                    <text x="280" y="130" font-size="12" fill="#f472b6" font-weight="bold">YOUR NETFLIX APP</text>
+                    <rect x="280" y="145" width="170" height="70" fill="rgba(244, 114, 182, 0.1)" stroke="#f472b6" stroke-width="1.5" rx="4"/>
+                    <text x="300" y="170" font-size="10" fill="#f472b6">Fetch Recommendations</text>
+                    <circle cx="365" cy="190" r="4" fill="#f472b6"/>
+                    <text x="305" y="210" font-size="10" fill="#cbd5e1">Response: ~50ms</text>
+                    
+                    <!-- Arrow from cache to phone -->
+                    <path d="M 210 180 L 280 180" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#arrowhead5)"/>
+                    <text x="230" y="175" font-size="9" fill="#60a5fa" font-weight="bold">Instant</text>
+                    
+                    <!-- Timeline -->
+                    <text x="30" y="245" font-size="12" fill="#cbd5e1" font-weight="bold">⏱️ Timeline:</text>
+                    <text x="30" y="265" font-size="9" fill="#cbd5e1">Night (12 AM): Batch job runs, recommendations computed & cached</text>
+                    <text x="30" y="280" font-size="9" fill="#cbd5e1">Day (3 PM): You open Netflix, recommendations fetched from cache instantly</text>
+                    
+                    <defs>
+                        <marker id="arrowhead5" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#60a5fa"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="question-block">
+        <div class="question-number">6</div>
+        <div class="question-text">How does a payment gateway ensure your bank transfer succeeds even if it crashes mid-transaction?</div>
+        <div class="answer-section">
+            <div class="answer-title">Answer: Idempotency & Transaction Logs</div>
+            <div class="answer-text">
+                The system <strong>records every step of the transaction</strong> before executing it. If it crashes, it can resume from where it left off, ensuring you're not charged twice and money doesn't disappear.
+            </div>
+            <ul class="answer-bullets">
+                <li><strong>Idempotency Key:</strong> Every transaction gets a unique ID. "Transfer ₹1000" with ID #12345</li>
+                <li><strong>Pre-log Everything:</strong> Before debiting your account, system writes "Step 1: Debit ₹1000" to permanent log</li>
+                <li><strong>Execute:</strong> Debit your account → Log shows "Step 1: Done"</li>
+                <li><strong>Crash Recovery:</strong> If server crashes, logs show exactly where transaction was: pending, in-progress, or completed</li>
+                <li><strong>Idempotent Retry:</strong> System won't execute "Debit ₹1000" again if ID #12345 is retried—it recognizes it already happened</li>
+            </ul>
+            <div class="diagram-container">
+                <div class="diagram-title">💳 Crash-Proof Transaction Flow</div>
+                <pre>SCENARIO: User initiates transfer of ₹1000
+```
+
+STEP 1: Log Entry (Persistent Storage)
+Transaction ID: #TXN_12345
+Status: INITIATED
+Amount: ₹1000
+[Saved to disk immediately]
+
+STEP 2: Pre-Check
+✓ Verify user has balance
+✓ Verify recipient exists
+Status: VALIDATED
+[Updated in log]
+
+STEP 3: Debit Your Account
+Your balance: ₹5000 → ₹4000
+Status: DEBITED
+[Log updated]
+
+STEP 4: Credit Recipient
+Recipient balance: ₹2000 → ₹3000
+Status: CREDITED
+[Log updated]
+
+STEP 5: Complete
+Status: SUCCESS
+[Final log entry]
+
+-----
+
+IF SERVER CRASHES between STEP 3 & 4:
+Recovery on restart:
+Read log → See ID #TXN_12345
+Check status → “DEBITED” (in-progress)
+Resume from STEP 4 → Credit recipient
+✓ No double debit, transaction completes
+
+-----
+
+IF SAME REQUEST RETRIED (duplicate):
+Check ID #TXN_12345 in log
+Status: “SUCCESS” (already completed)
+→ REJECT retry, return success message
+✓ Only charged once</pre>
+</div>
+</div>
+</div>
+
+```
+    <!-- Q7 -->
+    <div class="question-block">
+        <div class="question-number">7</div>
+        <div class="question-text">How does Google Search show results in <0.5 seconds even though it searches billions of web pages?</div>
+        <div class="answer-section">
+            <div class="answer-title">Answer: Inverted Indexes & Pre-Processing</div>
+            <div class="answer-text">
+                Google doesn't search the entire internet in real-time. Instead, it <strong>pre-processes all web pages offline</strong> and creates an "inverted index"—a map of which pages contain each word. Searching this index is lightning-fast.
+            </div>
+            <ul class="answer-bullets">
+                <li><strong>Inverted Index:</strong> Map of "word → list of pages containing it" (like a book's index)</li>
+                <li><strong>Offline Crawling:</strong> Google crawlers continuously download web pages 24/7</li>
+                <li><strong>Indexing:</strong> Extract all words from each page, build the inverted index (happens once, stored permanently)</li>
+                <li><strong>Query Time:</strong> When you search "cat", system just looks up "cat" in index, gets list of pages instantly</li>
+                <li><strong>Ranking:</strong> From matching pages, rank by relevance using PageRank (pre-computed score)</li>
+            </ul>
+            <div class="diagram-container">
+                <div class="diagram-title">🔍 Inverted Index for Fast Search</div>
+                <pre>INVERTED INDEX (Built Offline):
+```
+
+Word “cat” →       Page1, Page5, Page99, Page150…
+Word “dog” →       Page2, Page8, Page45, Page200…
+Word “search” →    Page10, Page11, Page99…
+
+QUERY TIME: User searches “cat”
+✓ Lookup word “cat” in index → [Page1, Page5, Page99, Page150…]
+✓ Retrieve top 10 from these pages (already ranked)
+✓ Return results in ~0.3 seconds
+
+WITHOUT INVERTED INDEX (Hypothetical):
+Search “cat” → scan all 10 billion web pages
+→ Find which ones have “cat”
+→ Takes hours… ✗ Not feasible</pre>
+</div>
+</div>
+</div>
+
+```
+    <!-- Q8 -->
+    <div class="question-block">
+        <div class="question-number">8</div>
+        <div class="question-text">Instagram shows your feed instantly even though it has 2 billion users. How?</div>
+        <div class="answer-section">
+            <div class="answer-title">Answer: Feed Timeline Caching & Push Model</div>
+            <div class="answer-text">
+                Instead of computing your feed on-the-fly each time you refresh, Instagram <strong>pre-computes and caches your feed</strong> in the background. When a friend posts, the system pushes the update to your cache.
+            </div>
+            <ul class="answer-bullets">
+                <li><strong>Push Model:</strong> When friend posts, system pushes it to all followers' cached feeds</li>
+                <li><strong>Fan-Out:</strong> If a celebrity posts, system distributes to millions of followers (across multiple servers)</li>
+                <li><strong>Cache Hit:</strong> When you refresh feed, it's already computed → served instantly</li>
+                <li><strong>Trade-off:</strong> Takes storage space (precomputing for 2B users), but read-time is fast</li>
+                <li><strong>Selective Push:</strong> For inactive users, feed computed on-demand (not precomputed)</li>
+            </ul>
+            <div class="diagram-container">
+                <div class="diagram-title">📲 Feed Timeline Push Model</div>
+                <svg width="100%" height="320" viewBox="0 0 500 320">
+                    <!-- Your Feed Cache -->
+                    <text x="30" y="25" font-size="12" fill="#60a5fa" font-weight="bold">YOUR CACHED FEED</text>
+                    <rect x="30" y="40" width="200" height="100" fill="rgba(96, 165, 250, 0.1)" stroke="#60a5fa" stroke-width="1.5" rx="4"/>
+                    <text x="50" y="60" font-size="9" fill="#cbd5e1">[Post 1] Friend A: "Vacation pics"</text>
+                    <text x="50" y="80" font-size="9" fill="#cbd5e1">[Post 2] Friend B: "Gym day"</text>
+                    <text x="50" y="100" font-size="9" fill="#cbd5e1">[Post 3] Friend C: "Coffee"</text>
+                    <text x="50" y="120" font-size="10" fill="#60a5fa">(Updated in real-time)</text>
+                    
+                    <!-- Friend posts -->
+                    <text x="30" y="175" font-size="12" fill="#fbbf24" font-weight="bold">WHEN FRIEND POSTS:</text>
+                    
+                    <rect x="30" y="190" width="200" height="60" fill="rgba(244, 114, 182, 0.1)" stroke="#f472b6" stroke-width="1.5" rx="4"/>
+                    <text x="50" y="210" font-size="10" fill="#f472b6" font-weight="bold">Friend D Posts: "Dinner"</text>
+                    <text x="50" y="230" font-size="9" fill="#cbd5e1">→ Send to all followers' caches</text>
+                    <text x="50" y="248" font-size="9" fill="#cbd5e1">→ Your cache: Add new post on top</text>
+                    
+                    <!-- Result -->
+                    <text x="280" y="175" font-size="12" fill="#f472b6" font-weight="bold">YOUR UPDATED FEED</text>
+                    <rect x="280" y="190" width="200" height="120" fill="rgba(244, 114, 182, 0.1)" stroke="#f472b6" stroke-width="1.5" rx="4"/>
+                    <text x="300" y="210" font-size="9" fill="#f472b6">[NEW Post 0] Friend D: "Dinner" ✨</text>
+                    <text x="300" y="230" font-size="9" fill="#cbd5e1">[Post 1] Friend A: "Vacation pics"</text>
+                    <text x="300" y="250" font-size="9" fill="#cbd5e1">[Post 2] Friend B: "Gym day"</text>
+                    <text x="300" y="270" font-size="9" fill="#cbd5e1">[Post 3] Friend C: "Coffee"</text>
+                    <text x="300" y="290" font-size="10" fill="#f472b6">(Instant refresh)</text>
+                    
+                    <!-- Arrow showing push -->
+                    <path d="M 230 220 L 280 220" stroke="#fbbf24" stroke-width="2.5" fill="none" marker-end="url(#arrowhead6)"/>
+                    <text x="240" y="215" font-size="10" fill="#fbbf24" font-weight="bold">Push</text>
+                    
+                    <!-- Timeline explanation -->
+                    <text x="30" y="330" font-size="10" fill="#cbd5e1">
+                        Feed construction: Pre-computed offline. Post addition: Real-time push to followers' caches.
+                    </text>
+                    
+                    <defs>
+                        <marker id="arrowhead6" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#fbbf24"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="question-block">
+        <div class="question-number">9</div>
+        <div class="question-text">Amazon processes millions of orders per day without losing a single one. How is data durability guaranteed?</div>
+        <div class="answer-section">
+            <div class="answer-title">Answer: Database Replication & Backup Strategy</div>
+            <div class="answer-text">
+                Amazon doesn't keep your order data in <strong>one place</strong>. Every order is replicated across multiple data centers. If one server fails, copies exist on others.
+            </div>
+            <ul class="answer-bullets">
+                <li><strong>Primary Database:</strong> Your order written to main database in Mumbai data center</li>
+                <li><strong>Synchronous Replication:</strong> Data immediately replicated to Delhi, Bangalore data centers</li>
+                <li><strong>Acknowledgment:</strong> Server only confirms order "saved" after all replicas are synced</li>
+                <li><strong>Failover:</strong> If Mumbai data center goes down, system switches to Delhi replica seamlessly</li>
+                <li><strong>Backup to Storage:</strong> Once daily, orders backed up to long-term storage (S3) for archival</li>
+            </ul>
+            <div class="diagram-container">
+                <div class="diagram-title">🗄️ Order Replication Across Data Centers</div>
+                <svg width="100%" height="300" viewBox="0 0 500 300">
+                    <text x="30" y="25" font-size="12" fill="#60a5fa" font-weight="bold">ORDER DURABILITY</text>
+                    
+                    <!-- Primary DC -->
+                    <rect x="30" y="50" width="120" height="100" fill="rgba(96, 165, 250, 0.2)" stroke="#60a5fa" stroke-width="2" rx="5"/>
+                    <text x="50" y="75" font-size="11" fill="#60a5fa" font-weight="bold">Mumbai DC</text>
+                    <text x="50" y="95" font-size="10" fill="#cbd5e1">PRIMARY</text>
+                    <circle cx="90" cy="115" r="8" fill="#60a5fa" opacity="0.8"/>
+                    <text x="65" y="142" font-size="9" fill="#cbd5e1">Order #789</text>
+                    <text x="50" y="160" font-size="9" fill="#cbd5e1" font-weight="bold">Status: SAVED ✓</text>
+                    
+                    <!-- Replicas -->
+                    <rect x="190" y="50" width="120" height="100" fill="rgba(139, 92, 246, 0.2)" stroke="#8b5cf6" stroke-width="2" rx="5"/>
+                    <text x="210" y="75" font-size="11" fill="#8b5cf6" font-weight="bold">Delhi DC</text>
+                    <text x="220" y="95" font-size="10" fill="#cbd5e1">REPLICA</text>
+                    <circle cx="250" cy="115" r="8" fill="#8b5cf6" opacity="0.8"/>
+                    <text x="225" y="142" font-size="9" fill="#cbd5e1">Order #789</text>
+                    <text x="215" y="160" font-size="9" fill="#cbd5e1" font-weight="bold">Status: SYNCED ✓</text>
+                    
+                    <rect x="350" y="50" width="120" height="100" fill="rgba(244, 114, 182, 0.2)" stroke="#f472b6" stroke-width="2" rx="5"/>
+                    <text x="370" y="75" font-size="11" fill="#f472b6" font-weight="bold">Bangalore DC</text>
+                    <text x="385" y="95" font-size="10" fill="#cbd5e1">REPLICA</text>
+                    <circle cx="410" cy="115" r="8" fill="#f472b6" opacity="0.8"/>
+                    <text x="385" y="142" font-size="9" fill="#cbd5e1">Order #789</text>
+                    <text x="375" y="160" font-size="9" fill="#cbd5e1" font-weight="bold">Status: SYNCED ✓</text>
+                    
+                    <!-- Sync arrows -->
+                    <path d="M 150 90 L 190 90" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#arrowhead7)" stroke-dasharray="5,5"/>
+                    <path d="M 150 120 L 190 120" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#arrowhead7)" stroke-dasharray="5,5"/>
+                    <path d="M 310 120 L 350 120" stroke="#8b5cf6" stroke-width="2" fill="none" marker-end="url(#arrowhead8)" stroke-dasharray="5,5"/>
+                    
+                    <text x="160" y="80" font-size="9" fill="#60a5fa">Sync</text>
+                    <text x="320" y="115" font-size="9" fill="#8b5cf6">Sync</text>
+                    
+                    <!-- Failure scenario -->
+                    <text x="30" y="190" font-size="12" fill="#fbbf24" font-weight="bold">IF MUMBAI DC FAILS:</text>
+                    <rect x="30" y="205" width="440" height="85" fill="rgba(251, 191, 36, 0.1)" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="5,5" rx="4"/>
+                    <text x="50" y="225" font-size="10" fill="#cbd5e1">System detects Mumbai unreachable</text>
+                    <text x="50" y="245" font-size="10" fill="#cbd5e1">→ Automatically switches to Delhi/Bangalore replicas</text>
+                    <text x="50" y="265" font-size="10" fill="#cbd5e1">→ Customer's order still accessible, no data loss ✓</text>
+                    
+                    <defs>
+                        <marker id="arrowhead7" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#60a5fa"/>
+                        </marker>
+                        <marker id="arrowhead8" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#8b5cf6"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="question-block">
+        <div class="question-number">10</div>
+        <div class="question-text">How does Twitter handle trending topics that change every minute without falling apart?</div>
+        <div class="answer-section">
+            <div class="answer-title">Answer: Time-Series Databases & Aggregate Counters</div>
+            <div class="answer-text">
+                Twitter doesn't count tweets individually. Instead, it uses <strong>counters that update in batches</strong> and stores time-series data (tweets grouped by minute/hour). This allows quick trending calculations.
+            </div>
+            <ul class="answer-bullets">
+                <li><strong>Time-Bucketing:</strong> Tweet counts grouped by minute: "10:00-10:01 → 5000 tweets with #IPL"</li>
+                <li><strong>Aggregate Counters:</strong> Running total per minute (fast increment, no need to rescan all tweets)</li>
+                <li><strong>Trending Algorithm:</strong> Compare tweet velocity: "How fast did #IPL grow in last hour vs last week?"</li>
+                <li><strong>Fast Lookup:</strong> Trending query hits pre-computed metrics, not raw tweet data</li>
+                <li><strong>Real-Time Updates:</strong> Counters updated every 10-30 seconds, so trending list refreshes accordingly</li>
+            </ul>
+            <div class="diagram-container">
+                <div class="diagram-title">📊 Time-Series Trending Calculation</div>
+                <pre>TWITTER TRENDING LOGIC:
+```
+
+TIME SERIES DATA (Every minute):
+10:00-10:01 → #IPL: 5000 tweets, #Cricket: 2000 tweets
+10:01-10:02 → #IPL: 7000 tweets, #Cricket: 2500 tweets
+10:02-10:03 → #IPL: 9000 tweets, #Cricket: 2800 tweets
+
+CALCULATE VELOCITY (Growth Rate):
+#IPL:
+1-min growth: 7000/5000 = 1.4x (40% growth)
+2-min growth: 9000/7000 = 1.28x (28% growth)
+Average velocity: HIGH ↑
+
+#Cricket:
+1-min growth: 2500/2000 = 1.25x (25% growth)
+2-min growth: 2800/2500 = 1.12x (12% growth)
+Average velocity: MEDIUM
+
+TRENDING RANKING:
+
+1. #IPL (velocity 1.4x, fastest growing)
+1. #Cricket (velocity 1.25x)
+1. #Football (velocity 1.1x)
+1. …
+
+WHY THIS IS FAST:
+✓ Pre-computed counters (no rescan of all tweets)
+✓ Math on metrics (division, not data processing)
+✓ Results in microseconds</pre>
+</div>
+</div>
+</div>
+
+```
+    <!-- Q11 -->
+    <div class="question-block">
+        <div class="question-number">11</div>
+        <div class="question-text">How does a video streaming platform buffer videos smoothly without constant rebuffering?</div>
+        <div class="answer-section">
+            <div class="answer-title">Answer: Adaptive Bitrate Streaming (ABR)</div>
+            <div class="answer-text">
+                The video platform <strong>continuously monitors your network speed</strong> and automatically adjusts video quality on-the-fly. Fast network = high quality, slow network = lower quality (but smooth playback).
+            </div>
+            <ul class="answer-bullets">
+                <li><strong>Multiple Qualities:</strong> Same video encoded in 5 versions (480p, 720p, 1080p, 2K, 4K)</li>
+                <li><strong>Bandwidth Detection:</strong> Your phone measures how fast it's downloading chunks</li>
+                <li><strong>Adaptive Selection:</strong> If download speed = 5Mbps, select 720p version (matches speed)</li>
+                <li><strong>Dynamic Switching:</strong> Network slows down → automatically switch to 480p (lower bitrate, faster download)</li>
+                <li><strong>Buffer Management:</strong> Maintain 10-20 seconds of buffered video ahead (allows for brief network dips)</li>
+            </ul>
+            <div class="diagram-container">
+                <div class="diagram-title">📹 Adaptive Bitrate Streaming</div>
+                <svg width="100%" height="320" viewBox="0 0 500 320">
+                    <text x="30" y="25" font-size="12" fill="#60a5fa" font-weight="bold">VIDEO STREAMING QUALITY ADAPTATION</text>
+                    
+                    <!-- Video encodings -->
+                    <text x="30" y="55" font-size="11" fill="#cbd5e1" font-weight="bold">Available Video Files on Server:</text>
+                    <rect x="30" y="65" width="70" height="50" fill="rgba(96, 165, 250, 0.15)" stroke="#60a5fa" stroke-width="1" rx="3"/>
+                    <text x="40" y="85" font-size="9" fill="#60a5fa" font-weight="bold">480p</text>
+                    <text x="40" y="105" font-size="8" fill="#cbd5e1">0.5 Mbps</text>
+                    
+                    <rect x="115" y="65" width="70" height="50" fill="rgba(96, 165, 250, 0.15)" stroke="#60a5fa" stroke-width="1" rx="3"/>
+                    <text x="125" y="85" font-size="9" fill="#60a5fa" font-weight="bold">720p</text>
+                    <text x="125" y="105" font-size="8" fill="#cbd5e1">2.5 Mbps</text>
+                    
+                    <rect x="200" y="65" width="70" height="50" fill="rgba(96, 165, 250, 0.15)" stroke="#60a5fa" stroke-width="1" rx="3"/>
+                    <text x="210" y="85" font-size="9" fill="#60a5fa" font-weight="bold">1080p</text>
+                    <text x="210" y="105" font-size="8" fill="#cbd5e1">5 Mbps</text>
+                    
+                    <rect x="285" y="65" width="70" height="50" fill="rgba(96, 165, 250, 0.15)" stroke="#60a5fa" stroke-width="1" rx="3"/>
+                    <text x="295" y="85" font-size="9" fill="#60a5fa" font-weight="bold">2K</text>
+                    <text x="295" y="105" font-size="8" fill="#cbd5e1">8 Mbps</text>
+                    
+                    <rect x="370" y="65" width="70" height="50" fill="rgba(96, 165, 250, 0.15)" stroke="#60a5fa" stroke-width="1" rx="3"/>
+                    <text x="380" y="85" font-size="9" fill="#60a5fa" font-weight="bold">4K</text>
+                    <text x="380" y="105" font-size="8" fill="#cbd5e1">15 Mbps</text>
+                    
+                    <!-- Network condition monitoring -->
+                    <text x="30" y="145" font-size="11" fill="#fbbf24" font-weight="bold">Network Speed Monitoring:</text>
+                    
+                    <rect x="30" y="155" width="440" height="60" fill="rgba(251, 191, 36, 0.1)" stroke="#fbbf24" stroke-width="1.5" rx="3"/>
+                    <text x="50" y="175" font-size="9" fill="#cbd5e1">T=0s: Network speed = 5.2 Mbps → Select 1080p ✓</text>
+                    <text x="50" y="195" font-size="9" fill="#cbd5e1">T=30s: Network speed drops to 2.0 Mbps → Switch to 720p ✓</text>
+                    <text x="50" y="215" font-size="9" fill="#cbd5e1">T=60s: Network recovers to 7 Mbps → Switch to 2K ✓</text>
+                    
+                    <!-- Result -->
+                    <text x="30" y="245" font-size="11" fill="#f472b6" font-weight="bold">Result:</text>
+                    <text x="30" y="265" font-size="9" fill="#cbd5e1">✓ Video never stops (quality adapts to network)</text>
+                    <text x="30" y="285" font-size="9" fill="#cbd5e1">✓ Buffer maintained (10-20 seconds ahead)</text>
+                    <text x="30" y="305" font-size="9" fill="#cbd5e1">✓ Smooth playback even on unstable connections</text>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q12 -->
+    <div class="question-block">
+        <div class="question-number">12</div>
+        <div class="question-text">How does Google Maps show turn-by-turn directions instantly for any route in the world?</div>
+        <div class="answer-section">
+            <div class="answer-title">Answer: Graph Processing & Pre-Computed Paths</div>
+            <div class="answer-text">
+                Google Maps treats roads as a <strong>graph (nodes = intersections, edges = roads)</strong>. Shortest path algorithms run on this graph, and popular routes are pre-computed and cached for instant lookup.
+            </div>
+            <ul class="answer-bullets">
+                <li><strong>Map as Graph:</strong> Every intersection = node, every road = edge with distance/time cost</li>
+                <li><strong>Dijkstra/A* Algorithm:</strong> Find shortest path between two nodes (optimized version runs in milliseconds)</li>
+                <li><strong>Popular Routes Cached:</strong> "Home → Office", "Mumbai → Delhi" pre-computed and stored</li>
+                <li><strong>Real-Time Adjustments:</strong> Traffic data updates (accidents, heavy traffic) → cost of edges changes → route recalculates</li>
+                <li><strong>Hierarchical Graphs:</strong> Fast highways processed separately from local roads (speeds up computation)</li>
+            </ul>
+            <div class="diagram-container">
+                <div class="diagram-title">🗺️ Graph-Based Route Finding</div>
+                <svg width="100%" height="320" viewBox="0 0 500 320">
+                    <text x="30" y="25" font-size="12" fill="#60a5fa" font-weight="bold">MAP AS A GRAPH</text>
+                    
+                    <!-- Graph visualization -->
+                    <!-- Nodes (Intersections) -->
+                    <circle cx="80" cy="80" r="12" fill="#60a5fa" opacity="0.8"/>
+                    <text x="75" y="85" font-size="10" fill="white" font-weight="bold">A</text>
+                    
+                    <circle cx="200" cy="60" r="12" fill="#60a5fa" opacity="0.8"/>
+                    <text x="195" y="65" font-size="10" fill="white" font-weight="bold">B</text>
+                    
+                    <circle cx="320" cy="100" r="12" fill="#60a5fa" opacity="0.8"/>
+                    <text x="315" y="105" font-size="10" fill="white" font-weight="bold">C</text>
+                    
+                    <circle cx="80" cy="200" r="12" fill="#60a5fa" opacity="0.8"/>
+                    <text x="75" y="205" font-size="10" fill="white" font-weight="bold">D</text>
+                    
+                    <circle cx="200" cy="220" r="12" fill="#60a5fa" opacity="0.8"/>
+                    <text x="195" y="225" font-size="10" fill="white" font-weight="bold">E</text>
+                    
+                    <circle cx="320" cy="180" r="12" fill="#60a5fa" opacity="0.8"/>
+                    <text x="315" y="185" font-size="10" fill="white" font-weight="bold">F</text>
+                    
+                    <!-- Edges (Roads) -->
+                    <path d="M 92 88 L 188 68" stroke="#8b5cf6" stroke-width="2" fill="none"/>
+                    <text x="130" y="75" font-size="8" fill="#cbd5e1">2 min</text>
+                    
+                    <path d="M 212 72 L 308 95" stroke="#8b5cf6" stroke-width="2" fill="none"/>
+                    <text x="250" y="80" font-size="8" fill="#cbd5e1">3 min</text>
+                    
+                    <path d="M 80 92 L 80 188" stroke="#8b5cf6" stroke-width="2" fill="none"/>
+                    <text x="90" y="145" font-size="8" fill="#cbd5e1">4 min</text>
+                    
+                    <path d="M 92 200 L 188 220" stroke="#8b5cf6" stroke-width="2" fill="none"/>
+                    <text x="130" y="215" font-size="8" fill="#cbd5e1">3 min</text>
+                    
+                    <path d="M 212 220 L 308 190" stroke="#8b5cf6" stroke-width="2" fill="none"/>
+                    <text x="250" y="215" font-size="8" fill="#cbd5e1">2 min</text>
+                    
+                    <path d="M 320 112 L 320 168" stroke="#8b5cf6" stroke-width="2" fill="none"/>
+                    <text x="330" y="145" font-size="8" fill="#cbd5e1">1.5 min</text>
+                    
+                    <!-- Start and End markers -->
+                    <circle cx="80" cy="80" r="18" fill="none" stroke="#60a5fa" stroke-width="2" stroke-dasharray="3,3"/>
+                    <text x="50" y="115" font-size="9" fill="#60a5fa" font-weight="bold">START: A</text>
+                    
+                    <circle cx="320" cy="180" r="18" fill="none" stroke="#f472b6" stroke-width="2" stroke-dasharray="3,3"/>
+                    <text x="340" y="180" font-size="9" fill="#f472b6" font-weight="bold">END: F</text>
+                    
+                    <!-- Route highlighting -->
+                    <text x="30" y="280" font-size="11" fill="#fbbf24" font-weight="bold">SHORTEST PATHS ALGORITHM:</text>
+                    <text x="30" y="300" font-size="9" fill="#cbd5e1">A → B (2 min) → C (3 min) → F (1.5 min) = 6.5 min</text>
+                    <text x="30" y="318" font-size="9" fill="#cbd5e1">A → D (4 min) → E (3 min) → F (2 min) = 9 min ✗</text>
+                    <text x="380" y="300" font-size="10" fill="#60a5fa" font-weight="bold">✓ OPTIMAL</text>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q13 -->
+    <div class="question-block">
+        <div class="question-number">13</div>
+        <div class="question-text">How does a bank's ATM system stay synchronized across thousands of machines so you can't withdraw money twice?</div>
+        <div class="answer-section">
+            <div class="answer-title">Answer: Distributed Transactions & Central Balance</div>
+            <div class="answer-text">
+                All ATMs connect to a <strong>central bank database</strong> that keeps your balance single-source-of-truth. Every withdrawal first checks this central balance, then deducts atomically.
+            </div>
+            <ul class="answer-bullets">
+                <li><strong>Central Master Database:</strong> Real-time balance stored in one secure location (replicated for backup)</li>
+                <li><strong>Every ATM Queries First:</strong> ATM in Delhi → "What's user balance?" → gets answer from Mumbai central DB</li>
+                <li><strong>Atomic Deduction:</strong> If balance is ₹10,000 and you withdraw ₹5,000, system atomically makes it ₹5,000</li>
+                <li><strong>No Simultaneous Withdrawals:</strong> If you try at 2 ATMs simultaneously, only first succeeds (second gets "insufficient balance")</li>
+                <li><strong>Network Failure Handling:</strong> If ATM loses connection, it doesn't dispense cash (safe failure—doesn't risk double withdrawal)</li>
+            </ul>
+            <div class="diagram-container">
+                <div class="diagram-title">🏦 Distributed ATM Synchronization</div>
+                <svg width="100%" height="280" viewBox="0 0 500 280">
+                    <text x="30" y="25" font-size="12" fill="#60a5fa" font-weight="bold">ATM NETWORK SYNCHRONIZATION</text>
+                    
+                    <!-- Central Bank DB -->
+                    <rect x="170" y="50" width="160" height="70" fill="rgba(139, 92, 246, 0.2)" stroke="#8b5cf6" stroke-width="2" rx="5"/>
+                    <text x="210" y="75" font-size="11" fill="#8b5cf6" font-weight="bold">Central Bank DB</text>
+                    <text x="185" y="100" font-size="10" fill="#cbd5e1">Balance: ₹10,000</text>
+                    <text x="200" y="118" font-size="9" fill="#60a5fa">(Single source of truth)</text>
+                    
+                    <!-- ATMs -->
+                    <rect x="30" y="160" width="90" height="80" fill="rgba(96, 165, 250, 0.15)" stroke="#60a5fa" stroke-width="1.5" rx="4"/>
+                    <text x="45" y="180" font-size="10" fill="#60a5fa" font-weight="bold">ATM Delhi</text>
+                    <circle cx="75" cy="200" r="6" fill="#60a5fa" opacity="0.7"/>
+                    <text x="45" y="225" font-size="9" fill="#cbd5e1">Withdraw: ₹5,000</text>
+                    
+                    <rect x="205" y="160" width="90" height="80" fill="rgba(244, 114, 182, 0.15)" stroke="#f472b6" stroke-width="1.5" rx="4"/>
+                    <text x="220" y="180" font-size="10" fill="#f472b6" font-weight="bold">ATM Mumbai</text>
+                    <circle cx="250" cy="200" r="6" fill="#f472b6" opacity="0.7"/>
+                    <text x="220" y="225" font-size="9" fill="#cbd5e1">Withdraw: ₹5,000</text>
+                    
+                    <rect x="380" y="160" width="90" height="80" fill="rgba(251, 191, 36, 0.15)" stroke="#fbbf24" stroke-width="1.5" rx="4"/>
+                    <text x="395" y="180" font-size="10" fill="#fbbf24" font-weight="bold">ATM Bangalore</text>
+                    <circle cx="425" cy="200" r="6" fill="#fbbf24" opacity="0.7"/>
+                    <text x="395" y="225" font-size="9" fill="#cbd5e1">Withdraw: ₹3,000</text>
+                    
+                    <!-- Arrows to central DB -->
+                    <path d="M 75 160 L 200 120" stroke="#60a5fa" stroke-width="1.5" fill="none" marker-end="url(#arrowhead9)"/>
+                    <path d="M 250 160 L 250 120" stroke="#f472b6" stroke-width="1.5" fill="none" marker-end="url(#arrowhead10)"/>
+                    <path d="M 425 160 L 300 120" stroke="#fbbf24" stroke-width="1.5" fill="none" marker-end="url(#arrowhead11)"/>
+                    
+                    <!-- Timeline -->
+                    <text x="30" y="265" font-size="10" fill="#cbd5e1" font-weight="bold">
+                        Scenario: ATM Delhi and Mumbai attempt withdrawal simultaneously
+                    </text>
+                    
+                    <defs>
+                        <marker id="arrowhead9" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#60a5fa"/>
+                        </marker>
+                        <marker id="arrowhead10" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#f472b6"/>
+                        </marker>
+                        <marker id="arrowhead11" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#fbbf24"/>
+                        </marker>
+                    </defs>
+                </svg>
+                <pre style="margin-top: 15px;">SEQUENCE:
+```
+
+T1: ATM Delhi requests balance
+DB: ✓ Balance = ₹10,000 → LOCK (no other transaction allowed)
+
+T1: ATM Mumbai requests balance simultaneously
+DB: ✗ LOCKED, requests waits…
+
+T2: ATM Delhi: Debit ₹5,000
+DB: Balance 10,000 → 5,000 (atomic update)
+DB: UNLOCK
+
+T3: ATM Mumbai finally acquires lock
+DB: Check balance = ₹5,000 (updated)
+DB: ✗ Insufficient balance (only ₹5,000 left)
+Transaction rejected, card returns ✓
+
+RESULT: Only ATM Delhi succeeds, no double withdrawal!</pre>
+</div>
+</div>
+</div>
+
+```
+    <!-- Q14 -->
+    <div class="question-block">
+        <div class="question-number">14</div>
+        <div class="question-text">How does a chat application like WhatsApp ensure your message isn't lost even if the recipient is offline?</div>
+        <div class="answer-section">
+            <div class="answer-title">Answer: Message Queues & Eventual Delivery</div>
+            <div class="answer-text">
+                When you send a message, WhatsApp <strong>stores it in a message queue</strong> on the server. Once the recipient comes online, the server delivers the queued message automatically.
+            </div>
+            <ul class="answer-bullets">
+                <li><strong>Send:</strong> Your message → Server stores in queue with recipient's ID</li>
+                <li><strong>Status: Sent (✓):</strong> Message saved to queue (not delivered yet)</li>
+                <li><strong>Recipient Offline:</strong> Message waits in queue (for hours if needed)</li>
+                <li><strong>Recipient Comes Online:</strong> Server detects connection → pushes all queued messages instantly</li>
+                <li><strong>Status: Delivered (✓✓):</strong> Recipient receives message, confirms to server</li>
+                <li><strong>Status: Read (✓✓🔵):</strong> Recipient reads → notification sent back to sender</li>
+            </ul>
+            <div class="diagram-container">
+                <div class="diagram-title">💬 Message Queue & Offline Delivery</div>
+                <svg width="100%" height="300" viewBox="0 0 500 300">
+                    <text x="30" y="25" font-size="12" fill="#60a5fa" font-weight="bold">MESSAGE DELIVERY WITH OFFLINE SUPPORT</text>
+                    
+                    <!-- Sender -->
+                    <rect x="30" y="50" width="90" height="60" fill="rgba(96, 165, 250, 0.15)" stroke="#60a5fa" stroke-width="1.5" rx="4"/>
+                    <text x="45" y="75" font-size="10" fill="#60a5fa" font-weight="bold">You</text>
+                    <text x="40" y="95" font-size="9" fill="#cbd5e1">"Hi friend!"</text>
+                    
+                    <!-- Server Queue -->
+                    <rect x="180" y="50" width="140" height="60" fill="rgba(139, 92, 246, 0.15)" stroke="#8b5cf6" stroke-width="1.5" rx="4"/>
+                    <text x="210" y="75" font-size="10" fill="#8b5cf6" font-weight="bold">WhatsApp Server</text>
+                    <text x="195" y="95" font-size="9" fill="#cbd5e1">Queue (friend is offline)</text>
+                    
+                    <!-- Recipient Offline -->
+                    <rect x="380" y="50" width="90" height="60" fill="rgba(255, 107, 107, 0.15)" stroke="#ff6b6b" stroke-width="1.5" rx="4"/>
+                    <text x="395" y="75" font-size="10" fill="#ff6b6b" font-weight="bold">Friend</text>
+                    <text x="395" y="95" font-size="9" fill="#cbd5e1">OFFLINE</text>
+                    
+                    <!-- Arrow: Send to queue -->
+                    <path d="M 120 80 L 180 80" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#arrowhead12)"/>
+                    <text x="140" y="75" font-size="9" fill="#60a5fa">Send</text>
+                    
+                    <!-- Arrow: Friend offline, no delivery yet -->
+                    <path d="M 320 80 L 380 80" stroke="#ff6b6b" stroke-width="1" stroke-dasharray="3,3" fill="none"/>
+                    <text x="335" y="75" font-size="8" fill="#ff6b6b">Waiting...</text>
+                    
+                    <!-- Status indication -->
+                    <text x="150" y="130" font-size="10" fill="#60a5fa" font-weight="bold">Status: Sent ✓</text>
+                    <text x="150" y="150" font-size="9" fill="#cbd5e1">(Queued on server)</text>
+                    
+                    <!-- Friend comes online -->
+                    <text x="30" y="190" font-size="12" fill="#fbbf24" font-weight="bold">FRIEND COMES ONLINE:</text>
+                    
+                    <rect x="380" y="210" width="90" height="60" fill="rgba(96, 165, 250, 0.15)" stroke="#60a5fa" stroke-width="1.5" rx="4"/>
+                    <text x="395" y="235" font-size="10" fill="#60a5fa" font-weight="bold">Friend</text>
+                    <text x="400" y="255" font-size="9" fill="#cbd5e1">ONLINE</text>
+                    
+                    <!-- Arrow: Deliver from queue -->
+                    <path d="M 320 240 L 380 240" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#arrowhead13)"/>
+                    <text x="335" y="235" font-size="9" fill="#60a5fa" font-weight="bold">Deliver</text>
+                    
+                    <!-- Final status -->
+                    <text x="150" y="260" font-size="10" fill="#60a5fa" font-weight="bold">Status: Delivered ✓✓</text>
+                    <text x="150" y="280" font-size="9" fill="#cbd5e1">(Message transferred from queue to friend)</text>
+                    
+                    <!-- Timeline box -->
+                    <rect x="30" y="305" width="440" height="45" fill="rgba(251, 191, 36, 0.1)" stroke="#fbbf24" stroke-width="1" rx="3" y="320"/>
+                    
+                    <defs>
+                        <marker id="arrowhead12" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#60a5fa"/>
+                        </marker>
+                        <marker id="arrowhead13" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#60a5fa"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q15 -->
+    <div class="question-block">
+        <div class="question-number">15</div>
+        <div class="question-text">How does a system handle cascading failures when one service crashes and causes others to fail?</div>
+        <div class="answer-section">
+            <div class="answer-title">Answer: Circuit Breaker & Graceful Degradation</div>
+            <div class="answer-text">
+                When one service crashes, systems use a <strong>circuit breaker</strong> to stop hammering it with requests. Instead, the system fails gracefully (shows cached data or simplified features) to prevent cascading failure across all services.
+            </div>
+            <ul class="answer-bullets">
+                <li><strong>Circuit Breaker States:</strong> Closed (normal) → Open (service down, stop requests) → Half-Open (test if recovered)</li>
+                <li><strong>Fail-Fast:</strong> When service A fails, don't wait for timeout—service B immediately fails and returns cached/fallback response</li>
+                <li><strong>Graceful Degradation:</strong> Instead of "Error", show "offline features"; e.g., YouTube loads video without recommendations</li>
+                <li><strong>Timeout Protection:</strong> Service B won't wait indefinitely for A's response; gives up after 5 seconds</li>
+                <li><strong>Bulkheads:</strong> Separate thread pools for each service, so one crash doesn't exhaust all threads</li>
+            </ul>
+            <div class="diagram-container">
+                <div class="diagram-title">🔄 Circuit Breaker & Cascading Failure Prevention</div>
+                <svg width="100%" height="320" viewBox="0 0 500 320">
+                    <text x="30" y="25" font-size="12" fill="#60a5fa" font-weight="bold">CIRCUIT BREAKER STATES</text>
+                    
+                    <!-- Closed State (Normal) -->
+                    <g>
+                        <rect x="30" y="50" width="140" height="100" fill="rgba(96, 165, 250, 0.15)" stroke="#60a5fa" stroke-width="2" rx="4"/>
+                        <text x="60" y="75" font-size="10" fill="#60a5fa" font-weight="bold">CLOSED</text>
+                        <text x="50" y="95" font-size="9" fill="#cbd5e1">(Normal operation)</text>
+                        <circle cx="100" cy="120" r="8" fill="#60a5fa" opacity="0.8"/>
+                        <text x="75" y="145" font-size="8" fill="#cbd5e1">✓ All requests pass</text>
+                    </g>
+                    
+                    <!-- Open State (Failed) -->
+                    <g>
+                        <rect x="180" y="50" width="140" height="100" fill="rgba(255, 107, 107, 0.15)" stroke="#ff6b6b" stroke-width="2" rx="4"/>
+                        <text x="210" y="75" font-size="10" fill="#ff6b6b" font-weight="bold">OPEN</text>
+                        <text x="195" y="95" font-size="9" fill="#cbd5e1">(Service crashed)</text>
+                        <circle cx="250" cy="120" r="8" fill="#ff6b6b" opacity="0.8"/>
+                        <line x1="245" y1="115" x2="255" y2="125" stroke="#ff6b6b" stroke-width="2"/>
+                        <line x1="255" y1="115" x2="245" y2="125" stroke="#ff6b6b" stroke-width="2"/>
+                        <text x="205" y="145" font-size="8" fill="#cbd5e1">✗ Reject requests</text>
+                    </g>
+                    
+                    <!-- Half-Open State (Testing) -->
+                    <g>
+                        <rect x="330" y="50" width="140" height="100" fill="rgba(251, 191, 36, 0.15)" stroke="#fbbf24" stroke-width="2" rx="4"/>
+                        <text x="360" y="75" font-size="10" fill="#fbbf24" font-weight="bold">HALF-OPEN</text>
+                        <text x="350" y="95" font-size="9" fill="#cbd5e1">(Testing recovery)</text>
+                        <circle cx="400" cy="120" r="8" fill="#fbbf24" opacity="0.8"/>
+                        <text x="370" y="145" font-size="8" fill="#cbd5e1">? Try 1 request</text>
+                    </g>
+                    
+                    <!-- Transitions -->
+                    <path d="M 170 100 L 180 100" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#arrowhead14)"/>
+                    <text x="168" y="95" font-size="8" fill="#cbd5e1">Failures</text>
+                    
+                    <path d="M 320 100 L 330 100" stroke="#fbbf24" stroke-width="2" fill="none" marker-end="url(#arrowhead15)"/>
+                    <text x="318" y="95" font-size="8" fill="#cbd5e1">Timeout</text>
+                    
+                    <path d="M 390 160 L 100 160" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#arrowhead16)"/>
+                    <text x="240" y="175" font-size="8" fill="#60a5fa">Success → CLOSED</text>
+                    
+                    <!-- Graceful Degradation -->
+                    <text x="30" y="210" font-size="12" fill="#fbbf24" font-weight="bold">GRACEFUL DEGRADATION:</text>
+                    <rect x="30" y="225" width="440" height="85" fill="rgba(251, 191, 36, 0.1)" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="5,5" rx="4"/>
+                    
+                    <text x="50" y="245" font-size="9" fill="#cbd5e1">Scenario: Video streaming service fails (backend crash)</text>
+                    
+                    <text x="50" y="265" font-size="9" fill="#cbd5e1">❌ Bad: App crashes entirely, shows "Server Error"</text>
+                    
+                    <text x="50" y="285" font-size="9" fill="#cbd5e1">✓ Good: Circuit breaker opens → app shows cached video, hides recommendations</text>
+                    
+                    <text x="50" y="305" font-size="9" fill="#cbd5e1">"Video ready. Recommendations unavailable (retry later)"</text>
+                    
+                    <defs>
+                        <marker id="arrowhead14" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#60a5fa"/>
+                        </marker>
+                        <marker id="arrowhead15" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#fbbf24"/>
+                        </marker>
+                        <marker id="arrowhead16" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#60a5fa"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>15 Real-World System Design Scenarios Explained Simply</p>
+        <p style="margin-top: 15px; font-size: 0.85em;">Master these concepts to understand how the world's largest systems handle scale, concurrency, and resilience.</p>
+    </footer>
+</div>
+```
+
+</body>
+</html>

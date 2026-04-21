@@ -19,6 +19,10 @@
 10. [Summary Comparison Table](#summary-comparison-table)
 
 ---
+<img width="883" height="510" alt="bedrock 1" src="https://github.com/user-attachments/assets/8ee56a83-eb89-4e41-a275-dad7de163733" />
+<img width="946" height="540" alt="bedrock 2" src="https://github.com/user-attachments/assets/612b5604-fbac-4442-a241-722b7ff99491" />
+
+
 
 ## FUNDAMENTAL CONCEPTS
 
